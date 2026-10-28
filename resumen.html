@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resumen Histórico y Climatológico - Estación Cerro Negro (IANIGLA / CONICET)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  
+  <!-- Chart.js & Feather Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+
+  <script>
+    if (localStorage.theme === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col justify-between transition-colors duration-300">
+
+  <!-- HEADER INSTITUCIONAL -->
+  <header class="bg-gradient-to-r from-[#0B486B] via-[#105B85] to-[#0B7BAF] text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center gap-2">
+          <img src="https://raw.githubusercontent.com/intasalta/emas/main/logo_inta.png" alt="Logo INTA" class="h-12 bg-white/95 p-1 rounded-lg shadow-md transition-transform hover:scale-105">
+          <div class="bg-white/95 px-2 py-1 rounded-lg h-12 flex items-center justify-center shadow-md">
+            <span class="text-[11px] font-extrabold text-[#0B486B] tracking-tighter">IANIGLA<br><span class="text-[9px] font-semibold text-slate-600">CONICET</span></span>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Estación Cerro Negro</h1>
+            <span class="text-[10px] bg-cyan-400/20 text-cyan-200 border border-cyan-400/30 px-2 py-0.5 rounded-full font-mono font-semibold">Histórico</span>
+          </div>
+          <p class="text-blue-100 text-xs font-medium">Observatorio Andino • IANIGLA-CONICET / INTA Salta</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right text-xs bg-black/25 backdrop-blur-md p-2.5 rounded-xl border border-white/10">
+          <p class="font-semibold text-blue-100 flex items-center justify-end gap-1">
+            <i data-feather="map-pin" class="h-3.5 w-3.5 text-cyan-300"></i> Lat -24.55° | Long -66.24°
+          </p>
+          <p class="text-cyan-200 text-[11px] mt-0.5">Puna Salteña • Altitud ~4.050 msnm</p>
+        </div>
+
+        <button id="theme-toggle" type="button" aria-label="Cambiar Tema" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-blue-100 border border-white/20 transition-all focus:outline-none focus:ring-2 focus:ring-white/50">
+          <i id="theme-toggle-dark-icon" data-feather="moon" class="hidden h-5 w-5"></i>
+          <i id="theme-toggle-light-icon" data-feather="sun" class="hidden h-5 w-5 text-amber-300"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- NAVBAR Y SELECTORES -->
+    <nav class="bg-black/25 backdrop-blur-md border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between overflow-x-auto py-2 text-xs font-medium gap-2 no-scrollbar whitespace-nowrap">
+          
+          <div class="flex items-center gap-2">
+            <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-blue-100 transition-all shadow-sm">
+              <i data-feather="activity" class="h-3.5 w-3.5"></i> Condiciones Actuales
+            </a>
+
+            <a href="resumen.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/25 text-white font-bold transition-all shadow-sm">
+              <i data-feather="calendar" class="h-3.5 w-3.5 text-cyan-300"></i> Resumen Histórico
+            </a>
+
+            <a href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 font-semibold transition-all shadow-sm">
+              <i data-feather="download" class="h-3.5 w-3.5 text-emerald-300"></i> Descargar CSV Completo
+            </a>
+          </div>
+
+          <!-- Selector de pestañas -->
+          <div class="flex items-center bg-black/30 p-0.5 rounded-lg border border-white/15 text-xs font-semibold gap-1">
+            <button id="tab-btn-mes" onclick="cambiarVista('mes')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-500 text-white shadow-sm transition-all">
+              <i data-feather="calendar" class="h-3.5 w-3.5"></i> Vista Mensual
+            </button>
+            <button id="tab-btn-anio" onclick="cambiarVista('anio')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-blue-100 hover:text-white hover:bg-white/10 transition-all">
+              <i data-feather="trending-up" class="h-3.5 w-3.5"></i> Vista Anual
+            </button>
+            <button id="tab-btn-todo" onclick="cambiarVista('todo')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-blue-100 hover:text-white hover:bg-white/10 transition-all">
+              <i data-feather="award" class="h-3.5 w-3.5"></i> Récords Históricos
+            </button>
+            <button onclick="cargarReportes()" title="Actualizar datos" class="p-1 rounded-md text-blue-200 hover:text-white hover:bg-white/15 transition-all border-l border-white/15 pl-1.5">
+              <i id="icon-refresh" data-feather="refresh-cw" class="h-3.5 w-3.5"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+
+    <!-- SECCIÓN: RÉCORDS HISTÓRICOS ABSOLUTOS (ACCESIBLE EN TODAS LAS VISTAS) -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 transition-colors">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+            Serie 2024 - Presente
+          </span>
+          <h2 class="text-lg font-bold text-slate-800 dark:text-white mt-1 flex items-center gap-2">
+            <i data-feather="award" class="h-5 w-5 text-amber-500"></i> Récords Absolutos de la Estación
+          </h2>
+        </div>
+        <p id="label-periodo-historico" class="text-xs text-slate-500 dark:text-slate-400">
+          Cargando periodo de mediciones...
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Récord T Min -->
+        <div class="bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 p-3 rounded-xl">
+          <p class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold">T° Mín. Absoluta</p>
+          <p id="rec-tmin" class="text-xl font-extrabold text-blue-950 dark:text-blue-200 mt-0.5">-- °C</p>
+          <p id="rec-tmin-date" class="text-[10px] text-slate-400 truncate mt-1">--</p>
+        </div>
+
+        <!-- Récord T Max -->
+        <div class="bg-red-50/70 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 p-3 rounded-xl">
+          <p class="text-[11px] text-red-600 dark:text-red-400 font-semibold">T° Máx. Absoluta</p>
+          <p id="rec-tmax" class="text-xl font-extrabold text-red-950 dark:text-red-200 mt-0.5">-- °C</p>
+          <p id="rec-tmax-date" class="text-[10px] text-slate-400 truncate mt-1">--</p>
+        </div>
+
+        <!-- Récord Suelo Min -->
+        <div class="bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 p-3 rounded-xl">
+          <p class="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold">T° Suelo Mín.</p>
+          <p id="rec-smin" class="text-xl font-extrabold text-indigo-950 dark:text-indigo-200 mt-0.5">-- °C</p>
+          <p id="rec-smin-date" class="text-[10px] text-slate-400 truncate mt-1">--</p>
+        </div>
+
+        <!-- Récord Nieve Max -->
+        <div class="bg-cyan-50/70 dark:bg-cyan-950/30 border border-cyan-100 dark:border-cyan-900/40 p-3 rounded-xl">
+          <p class="text-[11px] text-cyan-600 dark:text-cyan-400 font-semibold">Espesor Máx. Nieve</p>
+          <p id="rec-snow" class="text-xl font-extrabold text-cyan-950 dark:text-cyan-200 mt-0.5">-- cm</p>
+          <p id="rec-snow-date" class="text-[10px] text-slate-400 truncate mt-1">--</p>
+        </div>
+
+        <!-- Récord Viento Max -->
+        <div class="bg-purple-50/70 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40 p-3 rounded-xl">
+          <p class="text-[11px] text-purple-600 dark:text-purple-400 font-semibold">Ráfaga Récord</p>
+          <p id="rec-wind" class="text-xl font-extrabold text-purple-950 dark:text-purple-200 mt-0.5">-- km/h</p>
+          <p id="rec-wind-date" class="text-[10px] text-slate-400 truncate mt-1">--</p>
+        </div>
+
+        <!-- Récord Solar Max -->
+        <div class="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 p-3 rounded-xl">
+          <p class="text-[11px] text-amber-600 dark:text-amber-400 font-semibold">Pico Radiación</p>
+          <p id="rec-solar" class="text-xl font-extrabold text-amber-950 dark:text-amber-200 mt-0.5">-- W/m²</p>
+          <p id="rec-solar-date" class="text-[10px] text-slate-400 truncate mt-1">--</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA DINÁMICA: MENSUAL / ANUAL / HISTÓRICA -->
+    <div class="space-y-6">
+
+      <!-- BARRA DE FILTROS Y CONTROLES -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm">
+        <div class="flex items-center gap-2">
+          <i data-feather="filter" class="h-4 w-4 text-sky-500"></i>
+          <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Seleccionar Período:</span>
+          
+          <select id="select-mes-anio" onchange="alCambiarPeriodo()" class="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="ultimo">Cargando períodos...</option>
+          </select>
+        </div>
+
+        <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+          <span id="label-resumen-dias" class="font-medium">Total días analizados: --</span>
+        </div>
+      </div>
+
+      <!-- KPIS DEL PERÍODO SELECCIONADO -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
+          <span class="text-[10px] uppercase font-bold text-slate-400">T° Media</span>
+          <p id="kpi-tmed" class="text-xl font-black text-slate-800 dark:text-white mt-0.5">-- °C</p>
+          <p class="text-[10px] text-slate-400">Promedio térmico</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
+          <span class="text-[10px] uppercase font-bold text-blue-500">T° Mín. Período</span>
+          <p id="kpi-tmin" class="text-xl font-black text-blue-600 dark:text-blue-400 mt-0.5">-- °C</p>
+          <p class="text-[10px] text-slate-400">Mínima extrema</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
+          <span class="text-[10px] uppercase font-bold text-red-500">T° Máx. Período</span>
+          <p id="kpi-tmax" class="text-xl font-black text-red-600 dark:text-red-400 mt-0.5">-- °C</p>
+          <p class="text-[10px] text-slate-400">Máxima extrema</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
+          <span class="text-[10px] uppercase font-bold text-cyan-500">Espesor Nieve</span>
+          <p id="kpi-nieve-max" class="text-xl font-black text-cyan-600 dark:text-cyan-400 mt-0.5">-- cm</p>
+          <p id="kpi-dias-nieve" class="text-[10px] text-slate-400">0 días con nieve</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
+          <span class="text-[10px] uppercase font-bold text-sky-500">Lluvia Total</span>
+          <p id="kpi-lluvia-tot" class="text-xl font-black text-sky-600 dark:text-sky-400 mt-0.5">-- mm</p>
+          <p id="kpi-dias-lluvia" class="text-[10px] text-slate-400">0 días lluvia</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60">
+          <span class="text-[10px] uppercase font-bold text-purple-500">Viento Máximo</span>
+          <p id="kpi-vmax" class="text-xl font-black text-purple-600 dark:text-purple-400 mt-0.5">-- km/h</p>
+          <p id="kpi-vmed" class="text-[10px] text-slate-400">Media: -- km/h</p>
+        </div>
+      </div>
+
+      <!-- PANELES DE GRÁFICOS HISTÓRICOS -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- GRÁFICO 1: TEMPERATURAS (MÍN, MÁX, SUELO) -->
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <i data-feather="thermometer" class="h-4 w-4 text-red-500"></i> Evolución Térmica (Aire y Suelo)
+            </h3>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 font-semibold">°C</span>
+          </div>
+          <div class="h-64 w-full relative">
+            <canvas id="chartHistTemp"></canvas>
+          </div>
+        </div>
+
+        <!-- GRÁFICO 2: NIEVE Y PRECIPITACIÓN -->
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <i data-feather="cloud-snow" class="h-4 w-4 text-cyan-500"></i> Altura de Nieve y Precipitaciones
+            </h3>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-500 font-semibold">cm / mm</span>
+          </div>
+          <div class="h-64 w-full relative">
+            <canvas id="chartHistNieve"></canvas>
+          </div>
+        </div>
+
+        <!-- GRÁFICO 3: RÉGIMEN DE VIENTO -->
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <i data-feather="wind" class="h-4 w-4 text-sky-500"></i> Velocidades y Ráfagas de Viento
+            </h3>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-500 font-semibold">km/h</span>
+          </div>
+          <div class="h-64 w-full relative">
+            <canvas id="chartHistViento"></canvas>
+          </div>
+        </div>
+
+        <!-- GRÁFICO 4: PRESIÓN ATMOSFÉRICA & HUMEDAD -->
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <i data-feather="compass" class="h-4 w-4 text-indigo-500"></i> Presión Barométrica Media
+            </h3>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 font-semibold">mbar</span>
+          </div>
+          <div class="h-64 w-full relative">
+            <canvas id="chartHistPres"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABLA CLIMATOLÓGICA DETALLADA -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm overflow-hidden">
+        <div class="p-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <i data-feather="table" class="h-4 w-4 text-sky-500"></i> Tabla de Registros Diarios
+            </h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Detalle de mediciones por día</p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="exportarTablaCSV()" class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition">
+              <i data-feather="file-text" class="h-3.5 w-3.5"></i> Exportar Selección
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-96 no-scrollbar">
+          <table class="w-full text-xs text-left text-slate-600 dark:text-slate-300">
+            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="py-2.5 px-3">Fecha</th>
+                <th class="py-2.5 px-2 text-center">T. Mín</th>
+                <th class="py-2.5 px-2 text-center">T. Máx</th>
+                <th class="py-2.5 px-2 text-center">T. Med</th>
+                <th class="py-2.5 px-2 text-center">Suelo Med</th>
+                <th class="py-2.5 px-2 text-center">Nieve Máx</th>
+                <th class="py-2.5 px-2 text-center">Lluvia</th>
+                <th class="py-2.5 px-2 text-center">Viento Máx</th>
+                <th class="py-2.5 px-2 text-center">Presión</th>
+                <th class="py-2.5 px-2 text-center">Humedad</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-cuerpo" class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td colspan="10" class="text-center py-6 text-slate-400">Cargando registros...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+        <div>
+          <p class="text-slate-200 font-semibold text-sm">Estación Meteorológica Cerro Negro (Corral Negro - A003)</p>
+          <p class="text-slate-400 text-xs mt-0.5">Operada por el Instituto Argentino de Nivología, Glaciología y Ciencias Ambientales (IANIGLA - CONICET)</p>
+          <p class="text-slate-500 text-[11px] mt-1">Colaboración con el Observatorio Andino de Nieve y Hielo e INTA Salta</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition">
+            Descargar CSV Completo
+          </a>
+          <a href="index.html" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-medium transition">
+            Volver al Inicio
+          </a>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 pt-4 text-[11px] text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <p>Cita requerida: IANIGLA-CONICET, https://observatorioandino.com/estaciones</p>
+        <p>Actualización automatizada vía GitHub Actions</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT HISTÓRICO -->
+  <script>
+    feather.replace();
+
+    // Tema Oscuro / Claro
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    function syncThemeIcons() {
+      if (document.documentElement.classList.contains('dark')) {
+        darkIcon.classList.add('hidden');
+        lightIcon.classList.remove('hidden');
+      } else {
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+      }
+      feather.replace();
+    }
+    syncThemeIcons();
+
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      syncThemeIcons();
+      actualizarGraficosHistoricos();
+    });
+
+    let resumenGlobal = null;
+    let modoVista = 'mes'; // 'mes', 'anio', 'todo'
+    let chartHistTemp = null;
+    let chartHistNieve = null;
+    let chartHistViento = null;
+    let chartHistPres = null;
+    let diasFiltrados = [];
+
+    function getChartTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      return {
+        gridColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)',
+        textColor: isDark ? '#94a3b8' : '#64748b'
+      };
+    }
+
+    async function cargarReportes() {
+      const iconRef = document.getElementById('icon-refresh');
+      if (iconRef) iconRef.classList.add('animate-spin');
+
+      try {
+        const resp = await fetch('resumen_datos.json?nocache=' + Date.now());
+        if (!resp.ok) throw new Error("Error HTTP " + resp.status);
+        const data = await resp.json();
+        resumenGlobal = data;
+
+        mostrarRecords(data.records, data.periodo_historico);
+        popularSelectorPeriodos();
+        filtrarYRenderizar();
+      } catch (err) {
+        console.error("Error al cargar resumen_datos.json:", err);
+      } finally {
+        if (iconRef) {
+          setTimeout(() => iconRef.classList.remove('animate-spin'), 600);
+        }
+      }
+    }
+
+    function mostrarRecords(rec, per) {
+      if (per) {
+        document.getElementById('label-periodo-historico').innerText = 
+          `Desde ${per.inicio} hasta ${per.fin} (${per.total_dias} días registrados)`;
+      }
+      if (!rec) return;
+
+      if (rec.temp_min) {
+        document.getElementById('rec-tmin').innerText = `${rec.temp_min.valor} °C`;
+        document.getElementById('rec-tmin-date').innerText = rec.temp_min.fecha;
+      }
+      if (rec.temp_max) {
+        document.getElementById('rec-tmax').innerText = `${rec.temp_max.valor} °C`;
+        document.getElementById('rec-tmax-date').innerText = rec.temp_max.fecha;
+      }
+      if (rec.suelo_min) {
+        document.getElementById('rec-smin').innerText = `${rec.suelo_min.valor} °C`;
+        document.getElementById('rec-smin-date').innerText = rec.suelo_min.fecha;
+      }
+      if (rec.nieve_max_cm) {
+        document.getElementById('rec-snow').innerText = `${rec.nieve_max_cm.valor} cm`;
+        document.getElementById('rec-snow-date').innerText = rec.nieve_max_cm.fecha;
+      }
+      if (rec.viento_max_kmh) {
+        document.getElementById('rec-wind').innerText = `${rec.viento_max_kmh.valor} km/h`;
+        document.getElementById('rec-wind-date').innerText = rec.viento_max_kmh.fecha;
+      }
+      if (rec.irrad_max) {
+        document.getElementById('rec-solar').innerText = `${rec.irrad_max.valor} W/m²`;
+        document.getElementById('rec-solar-date').innerText = rec.irrad_max.fecha;
+      }
+    }
+
+    function popularSelectorPeriodos() {
+      const select = document.getElementById('select-mes-anio');
+      select.innerHTML = "";
+
+      if (modoVista === 'mes') {
+        const meses = resumenGlobal.mensuales || [];
+        for (let i = meses.length - 1; i >= 0; i--) {
+          const m = meses[i];
+          const opt = document.createElement('option');
+          opt.value = m.periodo; // YYYY-MM
+          opt.innerText = `${m.nombre_mes} ${m.anio}`;
+          select.appendChild(opt);
+        }
+      } else if (modoVista === 'anio') {
+        const anios = [...new Set((resumenGlobal.mensuales || []).map(m => m.anio))].sort((a,b) => b - a);
+        anios.forEach(y => {
+          const opt = document.createElement('option');
+          opt.value = y;
+          opt.innerText = `Año ${y}`;
+          select.appendChild(opt);
+        });
+      } else {
+        const opt = document.createElement('option');
+        opt.value = "todo";
+        opt.innerText = "Toda la Serie Histórica";
+        select.appendChild(opt);
+      }
+    }
+
+    function cambiarVista(vista) {
+      modoVista = vista;
+
+      const bMes = document.getElementById('tab-btn-mes');
+      const bAnio = document.getElementById('tab-btn-anio');
+      const bTodo = document.getElementById('tab-btn-todo');
+
+      [bMes, bAnio, bTodo].forEach(b => {
+        b.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-blue-100 hover:text-white hover:bg-white/10 transition-all";
+      });
+
+      if (vista === 'mes') bMes.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-500 text-white shadow-sm transition-all";
+      if (vista === 'anio') bAnio.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-500 text-white shadow-sm transition-all";
+      if (vista === 'todo') bTodo.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-500 text-white shadow-sm transition-all";
+
+      popularSelectorPeriodos();
+      filtrarYRenderizar();
+    }
+
+    function alCambiarPeriodo() {
+      filtrarYRenderizar();
+    }
+
+    function filtrarYRenderizar() {
+      if (!resumenGlobal || !resumenGlobal.diarios) return;
+
+      const selVal = document.getElementById('select-mes-anio').value;
+      const todos = resumenGlobal.diarios;
+
+      if (modoVista === 'mes') {
+        diasFiltrados = todos.filter(d => d.fecha.startsWith(selVal));
+      } else if (modoVista === 'anio') {
+        diasFiltrados = todos.filter(d => d.fecha.startsWith(selVal));
+      } else {
+        diasFiltrados = todos;
+      }
+
+      document.getElementById('label-resumen-dias').innerText = `Total días analizados: ${diasFiltrados.length}`;
+
+      actualizarKPIsPeriodo(diasFiltrados);
+      actualizarGraficosHistoricos();
+      actualizarTabla(diasFiltrados);
+    }
+
+    function actualizarKPIsPeriodo(dias) {
+      if (!dias || dias.length === 0) return;
+
+      const tMeds = dias.map(d => d.t_med).filter(v => v !== null);
+      const tMins = dias.map(d => d.t_min).filter(v => v !== null);
+      const tMaxs = dias.map(d => d.t_max).filter(v => v !== null);
+      const nieves = dias.map(d => d.nieve_max || 0.0);
+      const lluvias = dias.map(d => d.lluvia || 0.0);
+      const vMaxs = dias.map(d => d.v_max).filter(v => v !== null);
+      const vMeds = dias.map(d => d.v_med).filter(v => v !== null);
+
+      const tMedProm = tMeds.length ? (tMeds.reduce((a,b)=>a+b, 0) / tMeds.length).toFixed(1) : '--';
+      const tMinAbs = tMins.length ? Math.min(...tMins).toFixed(1) : '--';
+      const tMaxAbs = tMaxs.length ? Math.max(...tMaxs).toFixed(1) : '--';
+      const maxNieve = Math.max(...nieves, 0).toFixed(1);
+      const diasConNieve = nieves.filter(n => n >= 1.0).length;
+      const totalLluvia = lluvias.reduce((a,b)=>a+b, 0).toFixed(1);
+      const diasConLluvia = lluvias.filter(l => l >= 0.2).length;
+      const maxViento = vMaxs.length ? Math.max(...vMaxs).toFixed(1) : '--';
+      const medViento = vMeds.length ? (vMeds.reduce((a,b)=>a+b, 0) / vMeds.length).toFixed(1) : '--';
+
+      document.getElementById('kpi-tmed').innerText = `${tMedProm} °C`;
+      document.getElementById('kpi-tmin').innerText = `${tMinAbs} °C`;
+      document.getElementById('kpi-tmax').innerText = `${tMaxAbs} °C`;
+      document.getElementById('kpi-nieve-max').innerText = `${maxNieve} cm`;
+      document.getElementById('kpi-dias-nieve').innerText = `${diasConNieve} días con nieve`;
+      document.getElementById('kpi-lluvia-tot').innerText = `${totalLluvia} mm`;
+      document.getElementById('kpi-dias-lluvia').innerText = `${diasConLluvia} días de lluvia`;
+      document.getElementById('kpi-vmax').innerText = `${maxViento} km/h`;
+      document.getElementById('kpi-vmed').innerText = `Media: ${medViento} km/h`;
+    }
+
+    function actualizarGraficosHistoricos() {
+      if (!diasFiltrados || diasFiltrados.length === 0) return;
+      const theme = getChartTheme();
+
+      // Muestrear si hay demasiados puntos para rendimiento fluido
+      let sampleData = diasFiltrados;
+      if (diasFiltrados.length > 120) {
+        const step = Math.ceil(diasFiltrados.length / 100);
+        sampleData = diasFiltrados.filter((_, idx) => idx % step === 0);
+      }
+
+      const labels = sampleData.map(d => d.fecha.slice(5)); // MM-DD
+
+      // 1. Gráfico Térmico
+      const ctxT = document.getElementById('chartHistTemp').getContext('2d');
+      if (chartHistTemp) chartHistTemp.destroy();
+      chartHistTemp = new Chart(ctxT, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'T. Máxima (°C)',
+              data: sampleData.map(d => d.t_max),
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              borderWidth: 1.5,
+              pointRadius: sampleData.length < 40 ? 3 : 0,
+              tension: 0.2
+            },
+            {
+              label: 'T. Media (°C)',
+              data: sampleData.map(d => d.t_med),
+              borderColor: '#f59e0b',
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.2
+            },
+            {
+              label: 'T. Mínima (°C)',
+              data: sampleData.map(d => d.t_min),
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderWidth: 1.5,
+              pointRadius: sampleData.length < 40 ? 3 : 0,
+              tension: 0.2
+            },
+            {
+              label: 'Suelo Med (°C)',
+              data: sampleData.map(d => d.s_med),
+              borderColor: '#10b981',
+              borderDash: [3, 3],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.2
+            }
+          ]
+        },
+        options: getChartOptions(theme, '°C')
+      });
+
+      // 2. Gráfico Nieve y Precipitación
+      const ctxN = document.getElementById('chartHistNieve').getContext('2d');
+      if (chartHistNieve) chartHistNieve.destroy();
+      chartHistNieve = new Chart(ctxN, {
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              type: 'line',
+              label: 'Espesor Nieve (cm)',
+              data: sampleData.map(d => d.nieve_max),
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.2)',
+              fill: true,
+              borderWidth: 2,
+              tension: 0.2,
+              yAxisID: 'y'
+            },
+            {
+              type: 'bar',
+              label: 'Lluvia Diaria (mm)',
+              data: sampleData.map(d => d.lluvia),
+              backgroundColor: 'rgba(59, 130, 246, 0.7)',
+              borderRadius: 3,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: theme.textColor, font: { size: 10 } } }
+          },
+          scales: {
+            x: { grid: { color: theme.gridColor }, ticks: { color: theme.textColor, font: { size: 9 }, maxRotation: 0 } },
+            y: {
+              type: 'linear',
+              position: 'left',
+              grid: { color: theme.gridColor },
+              ticks: { color: theme.textColor, font: { size: 9 } },
+              title: { display: true, text: 'Nieve (cm)', color: '#06b6d4', font: { size: 10 } }
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: theme.textColor, font: { size: 9 } },
+              title: { display: true, text: 'Lluvia (mm)', color: '#3b82f6', font: { size: 10 } }
+            }
+          }
+        }
+      });
+
+      // 3. Gráfico Viento
+      const ctxV = document.getElementById('chartHistViento').getContext('2d');
+      if (chartHistViento) chartHistViento.destroy();
+      chartHistViento = new Chart(ctxV, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Ráfaga Máxima (km/h)',
+              data: sampleData.map(d => d.v_max),
+              borderColor: '#a855f7',
+              backgroundColor: 'rgba(168, 85, 247, 0.1)',
+              fill: true,
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.2
+            },
+            {
+              label: 'Media Diaria (km/h)',
+              data: sampleData.map(d => d.v_med),
+              borderColor: '#0284c7',
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.2
+            }
+          ]
+        },
+        options: getChartOptions(theme, 'km/h')
+      });
+
+      // 4. Gráfico Presión
+      const ctxP = document.getElementById('chartHistPres').getContext('2d');
+      if (chartHistPres) chartHistPres.destroy();
+      chartHistPres = new Chart(ctxP, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Presión Barométrica (mbar)',
+            data: sampleData.map(d => d.pres_med),
+            borderColor: '#6366f1',
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.2
+          }]
+        },
+        options: getChartOptions(theme, 'mbar')
+      });
+    }
+
+    function getChartOptions(theme, unit) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { color: theme.textColor, font: { size: 10 } } },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} ${unit}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: theme.gridColor },
+            ticks: { color: theme.textColor, font: { size: 9 }, maxRotation: 0 }
+          },
+          y: {
+            grid: { color: theme.gridColor },
+            ticks: { color: theme.textColor, font: { size: 9 } }
+          }
+        }
+      };
+    }
+
+    function actualizarTabla(dias) {
+      const tbody = document.getElementById('tabla-cuerpo');
+      tbody.innerHTML = "";
+
+      if (!dias || dias.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-slate-400">Sin registros para el período seleccionado.</td></tr>`;
+        return;
+      }
+
+      // Ordenar descendente (más reciente primero)
+      const ordenados = [...dias].reverse();
+
+      ordenados.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors";
+        
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-semibold font-mono text-slate-800 dark:text-slate-100">${d.fecha}</td>
+          <td class="py-2.5 px-2 text-center font-bold text-blue-600 dark:text-blue-400">${d.t_min !== null ? d.t_min + '°' : '--'}</td>
+          <td class="py-2.5 px-2 text-center font-bold text-red-600 dark:text-red-400">${d.t_max !== null ? d.t_max + '°' : '--'}</td>
+          <td class="py-2.5 px-2 text-center font-medium">${d.t_med !== null ? d.t_med + '°' : '--'}</td>
+          <td class="py-2.5 px-2 text-center text-amber-600 dark:text-amber-400 font-medium">${d.s_med !== null ? d.s_med + '°' : '--'}</td>
+          <td class="py-2.5 px-2 text-center font-bold ${d.nieve_max > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-400'}">${d.nieve_max > 0 ? d.nieve_max + ' cm' : '0'}</td>
+          <td class="py-2.5 px-2 text-center font-bold ${d.lluvia > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}">${d.lluvia > 0 ? d.lluvia + ' mm' : '0'}</td>
+          <td class="py-2.5 px-2 text-center text-purple-600 dark:text-purple-400 font-medium">${d.v_max !== null ? d.v_max + ' km/h' : '--'}</td>
+          <td class="py-2.5 px-2 text-center text-slate-500">${d.pres_med !== null ? d.pres_med : '--'}</td>
+          <td class="py-2.5 px-2 text-center text-slate-500">${d.hum_med !== null ? d.hum_med + '%' : '--'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportarTablaCSV() {
+      if (!diasFiltrados || diasFiltrados.length === 0) return;
+
+      let csv = "Fecha,T_Min_C,T_Max_C,T_Med_C,Suelo_Med_C,Nieve_Max_cm,Lluvia_mm,Viento_Max_kmh,Presion_mbar,Humedad_pct\n";
+      diasFiltrados.forEach(d => {
+        csv += `${d.fecha},${d.t_min||''},${d.t_max||''},${d.t_med||''},${d.s_med||''},${d.nieve_max||0},${d.lluvia||0},${d.v_max||''},${d.pres_med||''},${d.hum_med||''}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cerro_negro_resumen_${document.getElementById('select-mes-anio').value}.csv`;
+      a.click();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarReportes();
+    });
+  </script>
+</body>
+</html>

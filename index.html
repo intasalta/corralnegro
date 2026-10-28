@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estación Meteorológica Automática Cerro Negro - IANIGLA / CONICET / INTA</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  
+  <!-- Chart.js & Feather Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Rosa de los Vientos SVG Animaciones */
+    @keyframes windVaneBreeze {
+      0%, 100% { transform: rotate(var(--wind-angle, 0deg)); }
+      25% { transform: rotate(calc(var(--wind-angle, 0deg) - 2.5deg)); }
+      75% { transform: rotate(calc(var(--wind-angle, 0deg) + 2.5deg)); }
+    }
+    .wind-arrow-animated {
+      transform-origin: 80px 80px;
+      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .wind-arrow-breathing {
+      animation: windVaneBreeze 4.8s ease-in-out infinite;
+      transform-origin: 80px 80px;
+    }
+  </style>
+
+  <script>
+    if (localStorage.theme === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col justify-between transition-colors duration-300">
+
+  <!-- HEADER INSTITUCIONAL -->
+  <header class="bg-gradient-to-r from-[#0B486B] via-[#105B85] to-[#0B7BAF] text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center gap-2">
+          <img src="https://raw.githubusercontent.com/intasalta/emas/main/logo_inta.png" alt="Logo INTA" class="h-12 bg-white/95 p-1 rounded-lg shadow-md transition-transform hover:scale-105">
+          <div class="bg-white/95 px-2 py-1 rounded-lg h-12 flex items-center justify-center shadow-md">
+            <span class="text-[11px] font-extrabold text-[#0B486B] tracking-tighter">IANIGLA<br><span class="text-[9px] font-semibold text-slate-600">CONICET</span></span>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Estación Cerro Negro</h1>
+            <span class="text-[10px] bg-cyan-400/20 text-cyan-200 border border-cyan-400/30 px-2 py-0.5 rounded-full font-mono font-semibold">A003</span>
+          </div>
+          <p class="text-blue-100 text-xs font-medium">Observatorio Andino • IANIGLA-CONICET / INTA Salta</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right text-xs bg-black/25 backdrop-blur-md p-2.5 rounded-xl border border-white/10">
+          <p class="font-semibold text-blue-100 flex items-center justify-end gap-1">
+            <i data-feather="map-pin" class="h-3.5 w-3.5 text-cyan-300"></i> Lat -24.55° | Long -66.24°
+          </p>
+          <p class="text-cyan-200 text-[11px] mt-0.5">Puna Salteña • Altitud ~4.050 msnm</p>
+        </div>
+
+        <button id="theme-toggle" type="button" aria-label="Cambiar Tema" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-blue-100 border border-white/20 transition-all focus:outline-none focus:ring-2 focus:ring-white/50">
+          <i id="theme-toggle-dark-icon" data-feather="moon" class="hidden h-5 w-5"></i>
+          <i id="theme-toggle-light-icon" data-feather="sun" class="hidden h-5 w-5 text-amber-300"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- NAVBAR DE NAVEGACIÓN Y REPORTES -->
+    <nav class="bg-black/25 backdrop-blur-md border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between overflow-x-auto py-2 text-xs font-medium gap-2 no-scrollbar whitespace-nowrap">
+          
+          <div class="flex items-center gap-2">
+            <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/25 text-white font-bold transition-all shadow-sm">
+              <i data-feather="activity" class="h-3.5 w-3.5 text-cyan-300"></i> Condiciones Actuales
+            </a>
+
+            <a href="resumen.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-blue-100 transition-all shadow-sm" title="Ver análisis histórico y climatológico completo">
+              <i data-feather="calendar" class="h-3.5 w-3.5"></i> Resumen Histórico
+            </a>
+
+            <!-- Descarga de datos CSV -->
+            <a id="btn-download-csv" href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 font-semibold transition-all shadow-sm" title="Descargar serie temporal completa en formato CSV">
+              <i data-feather="download" class="h-3.5 w-3.5 text-emerald-300"></i> Descargar Datos (CSV)
+            </a>
+
+            <a href="https://observatorioandino.com/A003/" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-blue-200 transition-all shadow-sm" title="Portal oficial de la estación en Observatorio Andino">
+              <i data-feather="external-link" class="h-3.5 w-3.5"></i> Observatorio Andino
+            </a>
+          </div>
+
+          <button id="info-modal-btn" type="button" class="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-blue-100 border border-white/20 text-xs font-semibold transition-all">
+            <i data-feather="info" class="h-3.5 w-3.5 text-cyan-300"></i>
+            <span>Acerca de la Estación</span>
+          </button>
+
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL / DASHBOARD -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
+
+    <!-- FECHA, HORA, ESTADO ONLINE Y SELECTOR DE RANGO -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-4 md:p-6 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-colors">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> Transmisión Satelital
+          </span>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Última lectura registrada</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 mt-1">
+          <i data-feather="clock" class="text-sky-500 h-5 w-5"></i>
+          <span id="label-station-datetime">Cargando datos climáticos...</span>
+        </h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+          <i data-feather="shield" class="h-3 w-3 text-emerald-500"></i> Datos horarios validados por IANIGLA-CONICET
+        </p>
+      </div>
+      
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Control de rango para gráficos -->
+        <div class="flex items-center bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs font-semibold gap-1">
+          <span class="text-[11px] text-slate-500 dark:text-slate-400 px-2 flex items-center gap-1">
+            <i data-feather="sliders" class="h-3.5 w-3.5 text-sky-500"></i> Rango Gráficos:
+          </span>
+          <button id="btn-rango-24h" onclick="cambiarRangoHoras(24)" class="px-2.5 py-1 rounded-lg bg-sky-500 text-white shadow-sm transition-all text-xs font-semibold">
+            24 hs
+          </button>
+          <button id="btn-rango-48h" onclick="cambiarRangoHoras(48)" class="px-2.5 py-1 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800 transition-all text-xs font-semibold">
+            48 hs
+          </button>
+          <button id="btn-rango-7d" onclick="cambiarRangoHoras(168)" class="px-2.5 py-1 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800 transition-all text-xs font-semibold">
+            7 días
+          </button>
+          <button onclick="cargarDatosEstacion()" title="Recargar datos" class="p-1.5 rounded-lg text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400 hover:bg-white/50 dark:hover:bg-slate-800 transition-all border-l border-slate-200 dark:border-slate-700/60 pl-2 ml-0.5">
+            <i id="icon-refresh-dash" data-feather="refresh-cw" class="h-3.5 w-3.5"></i>
+          </button>
+        </div>
+
+        <a href="https://observatorioandino.com/A003/" target="_blank" rel="noopener" class="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-200 bg-sky-500/10 hover:bg-sky-500/20 px-3 py-1.5 rounded-xl border border-sky-500/30 transition shadow-sm font-semibold">
+          <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+          <i data-feather="radio" class="h-3.5 w-3.5 text-sky-500"></i>
+          <span>Estación A003 Online</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 1: TEMPERATURA AIRE, TEMPERATURA SUELO Y CONFORT TÉRMICO (3 COLUMNAS) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- TARJETA: TEMPERATURA DEL AIRE -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden flex flex-col justify-between transition-colors">
+        <div class="p-5">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <i data-feather="thermometer" class="h-5 w-5 text-red-500"></i> Temp. del Aire
+            </h3>
+            <span id="card-temp-val" class="text-3xl font-extrabold text-slate-900 dark:text-white">--<span class="text-lg font-normal text-slate-400">°C</span></span>
+          </div>
+
+          <table class="w-full text-xs text-left text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-400 font-semibold uppercase">
+              <tr>
+                <th class="py-2 px-1">Período</th>
+                <th class="py-2 px-1 text-center">Mínima</th>
+                <th class="py-2 px-1 text-center">Máxima</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+              <tr>
+                <td class="py-2 font-medium">Diaria (24h)</td>
+                <td id="table-temp-min" class="py-2 text-center text-blue-600 dark:text-blue-400 font-bold">--°C</td>
+                <td id="table-temp-max" class="py-2 text-center text-red-600 dark:text-red-400 font-bold">--°C</td>
+              </tr>
+              <tr class="text-[10px] text-slate-400">
+                <td class="py-1">A hs:</td>
+                <td id="table-temp-min-time" class="py-1 text-center">--:--</td>
+                <td id="table-temp-max-time" class="py-1 text-center">--:--</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="bg-slate-50 dark:bg-slate-900/40 p-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="trending-up" class="h-3.5 w-3.5 text-red-500"></i> Evolución Térmica (°C)
+            </span>
+            <span id="badge-temp-val" class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartTemp"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA: TEMPERATURA DEL SUELO (ESPECIAL CERRO NEGRO) -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden flex flex-col justify-between transition-colors">
+        <div class="p-5">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                <i data-feather="layers" class="h-5 w-5 text-amber-600 dark:text-amber-400"></i> Temp. del Suelo
+              </h3>
+              <p class="text-[10px] text-slate-400">Sensor geotérmico en Puna</p>
+            </div>
+            <span id="card-suelo-val" class="text-3xl font-extrabold text-amber-600 dark:text-amber-400">--<span class="text-lg font-normal text-slate-400">°C</span></span>
+          </div>
+
+          <table class="w-full text-xs text-left text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-400 font-semibold uppercase">
+              <tr>
+                <th class="py-2 px-1">Período</th>
+                <th class="py-2 px-1 text-center">Mínima</th>
+                <th class="py-2 px-1 text-center">Máxima</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+              <tr>
+                <td class="py-2 font-medium">Diaria (24h)</td>
+                <td id="table-suelo-min" class="py-2 text-center text-blue-600 dark:text-blue-400 font-bold">--°C</td>
+                <td id="table-suelo-max" class="py-2 text-center text-amber-600 dark:text-amber-400 font-bold">--°C</td>
+              </tr>
+              <tr class="text-[10px] text-slate-400">
+                <td class="py-1">A hs:</td>
+                <td id="table-suelo-min-time" class="py-1 text-center">--:--</td>
+                <td id="table-suelo-max-time" class="py-1 text-center">--:--</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="bg-slate-50 dark:bg-slate-900/40 p-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="activity" class="h-3.5 w-3.5 text-amber-500"></i> Suelo vs Aire (°C)
+            </span>
+            <span id="badge-suelo-val" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartSuelo"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA: SENSACIÓN TÉRMICA & HUMEDAD -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden flex flex-col justify-between transition-colors">
+        <div class="p-5 space-y-3">
+          <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 mb-2">
+            <i data-feather="cloud" class="h-5 w-5 text-emerald-500"></i> Humedad & Sensación
+          </h3>
+
+          <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Humedad Relativa</p>
+              <p class="text-[10px] text-slate-400">Sensor capacitivo</p>
+            </div>
+            <span id="card-hum-val" class="text-2xl font-bold text-blue-600 dark:text-blue-400">--%</span>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Sensación Térmica (Wind Chill)</p>
+              <p class="text-[10px] text-slate-400">Efecto enfriamiento por viento</p>
+            </div>
+            <span id="card-feels-val" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">--°C</span>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Punto de Rocío</p>
+              <p class="text-[10px] text-slate-400">Condensación atmosférica</p>
+            </div>
+            <span id="card-dew-val" class="text-lg font-bold text-cyan-600 dark:text-cyan-400">--°C</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 dark:bg-slate-900/40 p-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="droplet" class="h-3.5 w-3.5 text-blue-500"></i> Humedad Relativa (%)
+            </span>
+            <span id="badge-hum-val" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartHum"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECCIÓN 2: VIENTO CON ROSA DE LOS VIENTOS Y ALTURA DE NIEVE (2 COLUMNAS) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- TARJETA: VIENTO & ROSA DE LOS VIENTOS -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 flex flex-col justify-between transition-colors">
+        <div>
+          <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 mb-4">
+            <i data-feather="wind" class="h-5 w-5 text-sky-500"></i> Régimen de Viento
+          </h3>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 mb-4">
+            
+            <div class="flex flex-col justify-center space-y-3 w-full sm:w-1/2">
+              <div>
+                <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1.5">
+                  <i data-feather="activity" class="h-3.5 w-3.5 text-sky-500"></i> Velocidad Actual
+                </span>
+                <div class="flex items-baseline gap-1.5 mt-0.5">
+                  <span id="wind-speed-kmh" class="text-3xl sm:text-4xl font-extrabold text-slate-800 dark:text-white font-mono tracking-tight">--</span>
+                  <span class="text-xs sm:text-sm font-semibold text-slate-400">km/h</span>
+                  <span id="wind-speed-ms" class="text-xs text-sky-600 dark:text-sky-400 font-mono ml-2">(-- m/s)</span>
+                </div>
+                <p id="wind-beaufort-desc" class="text-[11px] text-sky-600 dark:text-sky-400 mt-0.5 font-medium">
+                  Calculando...
+                </p>
+              </div>
+
+              <div class="h-px bg-slate-200/70 dark:bg-slate-700/60"></div>
+
+              <div>
+                <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1.5">
+                  <i data-feather="navigation" class="h-3.5 w-3.5 text-sky-500"></i> Dirección
+                </span>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span id="wind-dir-main" class="text-2xl sm:text-3xl font-bold text-sky-600 dark:text-sky-400 font-mono tracking-tight">--</span>
+                  <span id="wind-deg-main" class="text-xs px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 font-semibold font-mono border border-sky-500/20">
+                    --°
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+                  Rumbo cardinal del viento
+                </p>
+              </div>
+            </div>
+
+            <!-- Rosa de los Vientos SVG Animada -->
+            <div class="flex flex-col items-center justify-center w-full sm:w-1/2 pt-1 sm:pt-0">
+              <div class="relative flex items-center justify-center p-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/80 shadow-sm border border-slate-200/60 dark:border-slate-700/60 group">
+                
+                <svg viewBox="0 0 160 160" class="w-36 h-36 sm:w-40 sm:h-40 select-none drop-shadow-sm transition-transform duration-300 group-hover:scale-105">
+                  <defs>
+                    <linearGradient id="needleNorthGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#38bdf8" />
+                      <stop offset="50%" stop-color="#0284c7" />
+                      <stop offset="100%" stop-color="#0369a1" />
+                    </linearGradient>
+
+                    <linearGradient id="needleSouthGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#94a3b8" />
+                      <stop offset="50%" stop-color="#64748b" />
+                      <stop offset="100%" stop-color="#475569" />
+                    </linearGradient>
+
+                    <filter id="needleShadow" x="-30%" y="-30%" width="160%" height="160%">
+                      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.32" />
+                    </filter>
+                  </defs>
+
+                  <circle cx="80" cy="80" r="74" class="fill-slate-50/80 dark:fill-slate-900/60 stroke-slate-200 dark:stroke-slate-700/80" stroke-width="1.5" />
+                  <circle cx="80" cy="80" r="67" class="stroke-slate-300/70 dark:stroke-slate-700/60 fill-none" stroke-width="0.75" stroke-dasharray="2 3" />
+                  <circle cx="80" cy="80" r="54" class="stroke-slate-200/60 dark:stroke-slate-800 fill-none" stroke-width="0.5" />
+
+                  <!-- Ticks cardinales -->
+                  <line x1="80" y1="11" x2="80" y2="18" class="stroke-red-500" stroke-width="2.5" stroke-linecap="round" />
+                  <line x1="149" y1="80" x2="142" y2="80" class="stroke-slate-400 dark:stroke-slate-500" stroke-width="2" stroke-linecap="round" />
+                  <line x1="80" y1="149" x2="80" y2="142" class="stroke-slate-400 dark:stroke-slate-500" stroke-width="2" stroke-linecap="round" />
+                  <line x1="11" y1="80" x2="18" y2="80" class="stroke-slate-400 dark:stroke-slate-500" stroke-width="2" stroke-linecap="round" />
+
+                  <!-- Textos cardinales -->
+                  <text x="80" y="24" font-size="11" font-weight="800" text-anchor="middle" dominant-baseline="central" class="fill-red-500">N</text>
+                  <text x="139" y="80" font-size="10" font-weight="700" text-anchor="middle" dominant-baseline="central" class="fill-slate-500 dark:fill-slate-400">E</text>
+                  <text x="80" y="137" font-size="10" font-weight="700" text-anchor="middle" dominant-baseline="central" class="fill-slate-500 dark:fill-slate-400">S</text>
+                  <text x="21" y="80" font-size="10" font-weight="700" text-anchor="middle" dominant-baseline="central" class="fill-slate-500 dark:fill-slate-400">O</text>
+
+                  <!-- AGUJA DINÁMICA DE LA VELETA -->
+                  <g id="wind-compass-needle" class="wind-arrow-animated" filter="url(#needleShadow)">
+                    <path d="M 80,19 L 86,72 L 80,77 Z" fill="url(#needleNorthGrad)" />
+                    <path d="M 80,19 L 74,72 L 80,77 Z" fill="#0284c7" />
+                    <path d="M 80,126 L 85,88 L 80,83 Z" fill="url(#needleSouthGrad)" />
+                    <path d="M 80,126 L 75,88 L 80,83 Z" fill="#475569" />
+                    <circle cx="80" cy="80" r="8" class="fill-white dark:fill-slate-900 stroke-sky-500 dark:stroke-sky-400" stroke-width="2.5" />
+                    <circle cx="80" cy="80" r="3.5" class="fill-sky-500 dark:fill-sky-400" />
+                  </g>
+                </svg>
+
+                <div class="absolute -bottom-2 px-2.5 py-0.5 rounded-full bg-slate-900/85 dark:bg-slate-100/90 text-white dark:text-slate-900 text-[10px] font-bold tracking-wider font-mono shadow-sm">
+                  <span id="wind-rose-badge">--</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="border-t border-slate-100 dark:border-slate-700/50 pt-3">
+            <div class="grid grid-cols-2 gap-2 text-center text-xs">
+              <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                <span class="block text-slate-400 text-[10px] uppercase font-semibold">Ráfaga Máx. (24h)</span>
+                <span id="wind-gust-max" class="font-bold text-purple-600 dark:text-purple-400 text-sm">-- km/h</span>
+              </div>
+              <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                <span class="block text-slate-400 text-[10px] uppercase font-semibold">Promedio (24h)</span>
+                <span id="wind-avg-24h" class="font-bold text-slate-800 dark:text-slate-100 text-sm">-- km/h</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="wind" class="h-3.5 w-3.5 text-sky-500"></i> Evolución de Viento (km/h)
+            </span>
+            <span id="badge-wind-val" class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartViento"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA: ALTURA DE NIEVE / MANTO NIVAL (ESPECIAL ALTA MONTAÑA) -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 flex flex-col justify-between transition-colors">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                <i data-feather="crosshair" class="h-5 w-5 text-cyan-500"></i> Altura de Nieve (Manto Nival)
+              </h3>
+              <p class="text-[10px] text-slate-400">Sensor ultrasónico de cota andina</p>
+            </div>
+            <span id="snow-badge-status" class="text-xs px-2.5 py-1 rounded-full font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+              Manto estable
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="bg-cyan-50/70 dark:bg-cyan-950/30 border border-cyan-100 dark:border-cyan-900/40 p-4 rounded-xl flex flex-col justify-between">
+              <p class="text-xs text-cyan-700 dark:text-cyan-300 font-semibold">Espesor Actual</p>
+              <div class="flex items-baseline gap-1 mt-1">
+                <span id="snow-cur-val" class="text-3xl sm:text-4xl font-extrabold text-cyan-950 dark:text-cyan-100 font-mono">--</span>
+                <span class="text-sm font-bold text-cyan-600 dark:text-cyan-400">cm</span>
+              </div>
+              <p id="snow-desc-val" class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Sin acumulación significativa</p>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 p-4 rounded-xl flex flex-col justify-between">
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Máximo en 24h</p>
+              <div class="flex items-baseline gap-1 mt-1">
+                <span id="snow-max-24h" class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-white font-mono">--</span>
+                <span class="text-sm font-semibold text-slate-400">cm</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Récord histórico: <strong id="snow-record-all">-- cm</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="trending-up" class="h-3.5 w-3.5 text-cyan-500"></i> Evolución Espesor de Nieve (cm)
+            </span>
+            <span id="badge-snow-val" class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartNieve"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECCIÓN 3: PRESIÓN BAROMÉTRICA, RADIACIÓN SOLAR Y PRECIPITACIONES (3 COLUMNAS) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- TARJETA: PRESIÓN ATMOSFÉRICA -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 flex flex-col justify-between transition-colors">
+        <div>
+          <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 mb-2">
+            <i data-feather="compass" class="h-5 w-5 text-indigo-500"></i> Presión Barométrica
+          </h3>
+          <p class="text-[10px] text-slate-400 mb-4">Cota Puna: ~600 mbar normales a 4.050 msnm</p>
+
+          <div class="bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 p-3 rounded-xl mb-3 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Presión Actual</p>
+              <p id="baro-trend-val" class="text-[10px] text-slate-400 mt-0.5 font-medium">Tendencia: --</p>
+            </div>
+            <div class="text-right">
+              <span id="baro-cur-val" class="text-2xl font-extrabold text-indigo-950 dark:text-indigo-200">--</span>
+              <span class="text-xs text-slate-400 font-semibold ml-0.5">mbar</span>
+            </div>
+          </div>
+
+          <table class="w-full text-xs text-left text-slate-600 dark:text-slate-300">
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+              <tr>
+                <td class="py-1.5 font-medium">Mínima 24h</td>
+                <td id="table-pres-min" class="py-1.5 text-right font-bold text-blue-600 dark:text-blue-400">-- mbar</td>
+              </tr>
+              <tr>
+                <td class="py-1.5 font-medium">Máxima 24h</td>
+                <td id="table-pres-max" class="py-1.5 text-right font-bold text-indigo-600 dark:text-indigo-400">-- mbar</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="bar-chart-2" class="h-3.5 w-3.5 text-indigo-500"></i> Tendencia Barométrica (mbar)
+            </span>
+            <span id="badge-pres-val" class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartPres"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA: RADIACIÓN SOLAR / IRRADIANCIA -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 flex flex-col justify-between transition-colors">
+        <div>
+          <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 mb-2">
+            <i data-feather="sun" class="h-5 w-5 text-amber-500"></i> Irradiancia Solar
+          </h3>
+          <p class="text-[10px] text-slate-400 mb-4">Piranómetro de alta montaña andina</p>
+
+          <div class="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 p-3 rounded-xl mb-3 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-amber-600 dark:text-amber-400 font-medium">Radiación Actual</p>
+              <p id="solar-desc-val" class="text-[10px] text-slate-400 mt-0.5 font-medium">Intensidad: --</p>
+            </div>
+            <div class="text-right">
+              <span id="solar-cur-val" class="text-2xl font-extrabold text-amber-950 dark:text-amber-200">--</span>
+              <span class="text-xs text-slate-400 font-semibold ml-0.5">W/m²</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+            <span class="text-slate-500 dark:text-slate-400 font-medium">Pico Máximo en 24h</span>
+            <span id="solar-max-val" class="font-bold text-amber-600 dark:text-amber-400">-- W/m²</span>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="sun" class="h-3.5 w-3.5 text-amber-500"></i> Ciclo Diario Solar (W/m²)
+            </span>
+            <span id="badge-solar-val" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartSolar"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA: PRECIPITACIÓN -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 flex flex-col justify-between transition-colors">
+        <div>
+          <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 mb-2">
+            <i data-feather="cloud-rain" class="h-5 w-5 text-blue-500"></i> Precipitación
+          </h3>
+          <p class="text-[10px] text-slate-400 mb-4">Pluviómetro de balancín calefaccionado</p>
+
+          <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+            <div class="bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 p-2.5 rounded-xl">
+              <span class="block text-blue-600 dark:text-blue-400 font-medium text-[11px]">Acumulado 24h</span>
+              <span id="rain-24h-val" class="text-xl font-bold text-blue-950 dark:text-blue-200">-- mm</span>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 p-2.5 rounded-xl">
+              <span class="block text-slate-400 font-medium text-[11px]">Acumulado 48h</span>
+              <span id="rain-48h-val" class="text-xl font-bold text-slate-800 dark:text-white">-- mm</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+            <span class="text-slate-500 dark:text-slate-400 font-medium">Tasa Horaria Actual</span>
+            <span id="rain-rate-val" class="font-bold text-slate-800 dark:text-white">0.0 mm/h</span>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <i data-feather="cloud-drizzle" class="h-3.5 w-3.5 text-blue-500"></i> Registros Horarios (mm)
+            </span>
+            <span id="badge-rain-val" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold font-mono">--</span>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartLluvia"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+        <div>
+          <p class="text-slate-200 font-semibold text-sm">Estación Meteorológica Cerro Negro (Corral Negro - A003)</p>
+          <p class="text-slate-400 text-xs mt-0.5">Operada por el Instituto Argentino de Nivología, Glaciología y Ciencias Ambientales (IANIGLA - CONICET)</p>
+          <p class="text-slate-500 text-[11px] mt-1">Colaboración con el Observatorio Andino de Nieve y Hielo e INTA Salta</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition">
+            Descargar CSV Completo
+          </a>
+          <a href="resumen.html" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-medium transition">
+            Ver Climatología
+          </a>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 pt-4 text-[11px] text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <p>Cita requerida: IANIGLA-CONICET, https://observatorioandino.com/estaciones</p>
+        <p>Actualización automatizada vía GitHub Actions</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DE INFORMACIÓN INSTITUCIONAL -->
+  <div id="info-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <i data-feather="info" class="text-sky-500"></i> Estación Cerro Negro
+        </h3>
+        <button id="close-modal-btn" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-feather="x"></i>
+        </button>
+      </div>
+      <div class="text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed">
+        <p><strong>Ubicación:</strong> Puna de Atacama / Salteña, Provincia de Salta, Argentina (Latitud -24.55°S, Longitud -66.24°O, Altitud ~4.050 msnm).</p>
+        <p><strong>Operador:</strong> Estación mantenida por el Instituto Argentino de Nivología, Glaciología y Ciencias Ambientales (IANIGLA), dependiente de CONICET.</p>
+        <p><strong>Objetivo:</strong> Monitoreo hidroclimático de alta montaña, balance de masa, cobertura de nieve y recursos hídricos en la cuenca andina.</p>
+        <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1 text-[11px]">
+          <p class="font-semibold text-slate-700 dark:text-slate-200">Aviso Legal y Compromiso de Cita:</p>
+          <p class="italic text-slate-500 dark:text-slate-400">"La descarga de estos datos es libre y gratuita, pero el consultante se compromete a citar a: IANIGLA-CONICET, https://observatorioandino.com/estaciones, en cualquier estudio o trabajo que utilice esta información."</p>
+        </div>
+      </div>
+      <div class="text-right pt-2 border-t border-slate-100 dark:border-slate-700">
+        <button onclick="document.getElementById('info-modal').classList.add('hidden')" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT DEL DASHBOARD -->
+  <script>
+    feather.replace();
+
+    // Gestión del tema Oscuro / Claro
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    function syncThemeIcons() {
+      if (document.documentElement.classList.contains('dark')) {
+        darkIcon.classList.add('hidden');
+        lightIcon.classList.remove('hidden');
+      } else {
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+      }
+      feather.replace();
+    }
+    syncThemeIcons();
+
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      syncThemeIcons();
+      actualizarEstilosGraficos();
+    });
+
+    // Modal Info
+    const infoModal = document.getElementById('info-modal');
+    document.getElementById('info-modal-btn').addEventListener('click', () => {
+      infoModal.classList.remove('hidden');
+      setTimeout(() => infoModal.classList.remove('opacity-0'), 10);
+    });
+    document.getElementById('close-modal-btn').addEventListener('click', () => {
+      infoModal.classList.add('opacity-0');
+      setTimeout(() => infoModal.classList.add('hidden'), 300);
+    });
+
+    // Beaufort escala
+    function getBeaufort(kmh) {
+      if (kmh < 1) return "Calma total";
+      if (kmh < 6) return "Ventolina suave";
+      if (kmh < 12) return "Brisa muy débil";
+      if (kmh < 20) return "Brisa ligera";
+      if (kmh < 29) return "Brisa moderada";
+      if (kmh < 39) return "Brisa fresca";
+      if (kmh < 50) return "Viento fuerte";
+      if (kmh < 62) return "Viento muy fuerte";
+      if (kmh < 75) return "Temporal / Vendaval";
+      return "Temporal duro";
+    }
+
+    // Almacén de datos global
+    let datosClimaGlobal = null;
+    let chartTemp = null;
+    let chartSuelo = null;
+    let chartHum = null;
+    let chartViento = null;
+    let chartNieve = null;
+    let chartPres = null;
+    let chartSolar = null;
+    let chartLluvia = null;
+    let horasRangoActual = 24;
+
+    function getChartTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      return {
+        gridColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)',
+        textColor: isDark ? '#94a3b8' : '#64748b'
+      };
+    }
+
+    function cambiarRangoHoras(horas) {
+      horasRangoActual = horas;
+      
+      // Actualizar botones UI
+      const b24 = document.getElementById('btn-rango-24h');
+      const b48 = document.getElementById('btn-rango-48h');
+      const b7d = document.getElementById('btn-rango-7d');
+
+      [b24, b48, b7d].forEach(b => {
+        b.className = "px-2.5 py-1 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800 transition-all text-xs font-semibold";
+      });
+
+      if (horas === 24) b24.className = "px-2.5 py-1 rounded-lg bg-sky-500 text-white shadow-sm transition-all text-xs font-semibold";
+      if (horas === 48) b48.className = "px-2.5 py-1 rounded-lg bg-sky-500 text-white shadow-sm transition-all text-xs font-semibold";
+      if (horas === 168) b7d.className = "px-2.5 py-1 rounded-lg bg-sky-500 text-white shadow-sm transition-all text-xs font-semibold";
+
+      if (datosClimaGlobal && datosClimaGlobal.serie_reciente) {
+        renderizarGraficos(datosClimaGlobal.serie_reciente);
+      }
+    }
+
+    async function cargarDatosEstacion() {
+      const refreshIcon = document.getElementById('icon-refresh-dash');
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
+
+      try {
+        const resp = await fetch('clima_actual.json?nocache=' + Date.now());
+        if (!resp.ok) throw new Error("Error HTTP " + resp.status);
+        const data = await resp.json();
+        datosClimaGlobal = data;
+        actualizarUI(data);
+      } catch (err) {
+        console.warn("No se pudo cargar clima_actual.json, intentando alternativa...", err);
+        document.getElementById('label-station-datetime').innerText = "Consultando datos de la estación...";
+      } finally {
+        if (refreshIcon) {
+          setTimeout(() => refreshIcon.classList.remove('animate-spin'), 600);
+        }
+      }
+    }
+
+    function actualizarUI(data) {
+      const act = data.actual || {};
+      const st24 = data.estadisticas_24h || {};
+
+      // Fecha y hora
+      if (data.ultima_actualizacion) {
+        document.getElementById('label-station-datetime').innerText = data.ultima_actualizacion;
+      }
+
+      // Temperatura Aire
+      document.getElementById('card-temp-val').innerHTML = `${act.temp_aire !== undefined ? act.temp_aire : '--'}<span class="text-lg font-normal text-slate-400">°C</span>`;
+      if (st24.temp_aire) {
+        document.getElementById('table-temp-min').innerText = `${st24.temp_aire.min !== null ? st24.temp_aire.min : '--'}°C`;
+        document.getElementById('table-temp-max').innerText = `${st24.temp_aire.max !== null ? st24.temp_aire.max : '--'}°C`;
+        document.getElementById('table-temp-min-time').innerText = st24.temp_aire.min_time || '--:--';
+        document.getElementById('table-temp-max-time').innerText = st24.temp_aire.max_time || '--:--';
+      }
+      document.getElementById('badge-temp-val').innerText = `${act.temp_aire !== undefined ? act.temp_aire : '--'}°C`;
+
+      // Temperatura Suelo
+      document.getElementById('card-suelo-val').innerHTML = `${act.temp_suelo !== undefined ? act.temp_suelo : '--'}<span class="text-lg font-normal text-slate-400">°C</span>`;
+      if (st24.temp_suelo) {
+        document.getElementById('table-suelo-min').innerText = `${st24.temp_suelo.min !== null ? st24.temp_suelo.min : '--'}°C`;
+        document.getElementById('table-suelo-max').innerText = `${st24.temp_suelo.max !== null ? st24.temp_suelo.max : '--'}°C`;
+        document.getElementById('table-suelo-min-time').innerText = st24.temp_suelo.min_time || '--:--';
+        document.getElementById('table-suelo-max-time').innerText = st24.temp_suelo.max_time || '--:--';
+      }
+      document.getElementById('badge-suelo-val').innerText = `${act.temp_suelo !== undefined ? act.temp_suelo : '--'}°C`;
+
+      // Humedad & Confort
+      document.getElementById('card-hum-val').innerText = `${act.hum_rel !== undefined ? act.hum_rel : '--'}%`;
+      document.getElementById('badge-hum-val').innerText = `${act.hum_rel !== undefined ? act.hum_rel : '--'}%`;
+      document.getElementById('card-feels-val').innerText = `${act.sensacion_termica !== null ? act.sensacion_termica : (act.temp_aire || '--')}°C`;
+      document.getElementById('card-dew-val').innerText = `${act.punto_rocio !== null ? act.punto_rocio : '--'}°C`;
+
+      // Viento
+      document.getElementById('wind-speed-kmh').innerText = act.vel_viento_kmh !== undefined ? act.vel_viento_kmh : '--';
+      document.getElementById('wind-speed-ms').innerText = act.vel_viento_ms !== undefined ? `(${act.vel_viento_ms} m/s)` : '';
+      document.getElementById('wind-dir-main').innerText = act.dir_viento_cardinal || '--';
+      document.getElementById('wind-deg-main').innerText = `${act.dir_viento_deg || 0}°`;
+      document.getElementById('wind-rose-badge').innerText = `${act.dir_viento_cardinal || '--'} ${act.dir_viento_deg || 0}°`;
+      document.getElementById('wind-beaufort-desc').innerText = getBeaufort(act.vel_viento_kmh || 0);
+      document.getElementById('wind-gust-max').innerText = `${st24.viento_max_kmh !== undefined ? st24.viento_max_kmh : '--'} km/h`;
+      document.getElementById('wind-avg-24h').innerText = `${st24.viento_avg_kmh !== undefined ? st24.viento_avg_kmh : '--'} km/h`;
+      document.getElementById('badge-wind-val').innerText = `${act.vel_viento_kmh || 0} km/h`;
+
+      // Rotar aguja de la Rosa de los Vientos SVG
+      const needle = document.getElementById('wind-compass-needle');
+      if (needle) {
+        needle.style.transform = `rotate(${act.dir_viento_deg || 0}deg)`;
+      }
+
+      // Nieve
+      const nCur = act.alt_nieve !== undefined ? act.alt_nieve : 0.0;
+      document.getElementById('snow-cur-val').innerText = nCur;
+      document.getElementById('snow-max-24h').innerText = st24.nieve_max_24h !== undefined ? st24.nieve_max_24h : '--';
+      document.getElementById('badge-snow-val').innerText = `${nCur} cm`;
+      
+      const snowBadge = document.getElementById('snow-badge-status');
+      const snowDesc = document.getElementById('snow-desc-val');
+      if (nCur > 5.0) {
+        snowBadge.className = "text-xs px-2.5 py-1 rounded-full font-bold bg-cyan-500 text-white shadow-sm";
+        snowBadge.innerText = "Nevada / Manto Significativo";
+        snowDesc.innerText = "Presencia de manto nival activo";
+      } else if (nCur > 0.5) {
+        snowBadge.className = "text-xs px-2.5 py-1 rounded-full font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20";
+        snowBadge.innerText = "Escarcha / Nieve fina";
+        snowDesc.innerText = "Capa ligera de nieve o escarcha";
+      } else {
+        snowBadge.className = "text-xs px-2.5 py-1 rounded-full font-bold bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300";
+        snowBadge.innerText = "Suelo despejado";
+        snowDesc.innerText = "Sin acumulación nival en el sensor";
+      }
+
+      // Presión Barométrica
+      document.getElementById('baro-cur-val').innerText = act.pres_atm !== undefined ? act.pres_atm : '--';
+      document.getElementById('baro-trend-val').innerText = `Tendencia: ${act.tendencia_presion || 'Estable'}`;
+      if (st24.pres_atm) {
+        document.getElementById('table-pres-min').innerText = `${st24.pres_atm.min || '--'} mbar`;
+        document.getElementById('table-pres-max').innerText = `${st24.pres_atm.max || '--'} mbar`;
+      }
+      document.getElementById('badge-pres-val').innerText = `${act.pres_atm || '--'} mbar`;
+
+      // Radiación Solar
+      const solCur = act.irradiancia !== undefined ? act.irradiancia : 0;
+      document.getElementById('solar-cur-val').innerText = solCur;
+      document.getElementById('solar-max-val').innerText = `${st24.irradiancia_max !== undefined ? st24.irradiancia_max : '--'} W/m²`;
+      document.getElementById('badge-solar-val').innerText = `${solCur} W/m²`;
+      
+      const solDesc = document.getElementById('solar-desc-val');
+      if (solCur > 1100) solDesc.innerText = "Intensidad: Extrema (Puna alta)";
+      else if (solCur > 700) solDesc.innerText = "Intensidad: Muy Alta";
+      else if (solCur > 300) solDesc.innerText = "Intensidad: Moderada";
+      else if (solCur > 10) solDesc.innerText = "Intensidad: Débil";
+      else solDesc.innerText = "Intensidad: Nula (Noche)";
+
+      // Precipitaciones
+      document.getElementById('rain-24h-val').innerText = `${st24.lluvia_acumulada_24h !== undefined ? st24.lluvia_acumulada_24h : '0.0'} mm`;
+      document.getElementById('rain-48h-val').innerText = `${st24.lluvia_acumulada_48h !== undefined ? st24.lluvia_acumulada_48h : '0.0'} mm`;
+      document.getElementById('rain-rate-val').innerText = `${act.precipitacion_horaria || 0.0} mm/h`;
+      document.getElementById('badge-rain-val').innerText = `${st24.lluvia_acumulada_24h || 0.0} mm`;
+
+      // Gráficos
+      if (data.serie_reciente) {
+        renderizarGraficos(data.serie_reciente);
+      }
+    }
+
+    function renderizarGraficos(serieCompleta) {
+      const theme = getChartTheme();
+
+      // Recortar según rango de horas
+      const sliceCount = Math.min(horasRangoActual, serieCompleta.length);
+      const datos = serieCompleta.slice(-sliceCount);
+
+      const labels = datos.map(d => (horasRangoActual > 48) ? `${d.dia} ${d.hora}` : d.hora);
+
+      // 1. Gráfico Temperatura Aire
+      const ctxTemp = document.getElementById('chartTemp').getContext('2d');
+      if (chartTemp) chartTemp.destroy();
+      chartTemp = new Chart(ctxTemp, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Temp. Aire (°C)',
+            data: datos.map(d => d.temp),
+            borderColor: '#ef4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2,
+            pointRadius: sliceCount <= 24 ? 3 : 0
+          }]
+        },
+        options: getChartOptions(theme, '°C')
+      });
+
+      // 2. Gráfico Suelo vs Aire
+      const ctxSuelo = document.getElementById('chartSuelo').getContext('2d');
+      if (chartSuelo) chartSuelo.destroy();
+      chartSuelo = new Chart(ctxSuelo, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Temp. Suelo (°C)',
+              data: datos.map(d => d.temp_suelo),
+              borderColor: '#d97706',
+              backgroundColor: 'rgba(217, 119, 6, 0.1)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2,
+              pointRadius: sliceCount <= 24 ? 3 : 0
+            },
+            {
+              label: 'Temp. Aire (°C)',
+              data: datos.map(d => d.temp),
+              borderColor: 'rgba(239, 68, 68, 0.5)',
+              borderDash: [4, 4],
+              borderWidth: 1.5,
+              pointRadius: 0
+            }
+          ]
+        },
+        options: getChartOptions(theme, '°C')
+      });
+
+      // 3. Gráfico Humedad
+      const ctxHum = document.getElementById('chartHum').getContext('2d');
+      if (chartHum) chartHum.destroy();
+      chartHum = new Chart(ctxHum, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Humedad Relativa (%)',
+            data: datos.map(d => d.hum),
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2,
+            pointRadius: sliceCount <= 24 ? 3 : 0
+          }]
+        },
+        options: getChartOptions(theme, '%')
+      });
+
+      // 4. Gráfico Viento
+      const ctxViento = document.getElementById('chartViento').getContext('2d');
+      if (chartViento) chartViento.destroy();
+      chartViento = new Chart(ctxViento, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Velocidad (km/h)',
+            data: datos.map(d => d.viento_kmh),
+            borderColor: '#0284c7',
+            backgroundColor: 'rgba(2, 132, 199, 0.1)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: sliceCount <= 24 ? 3 : 0
+          }]
+        },
+        options: getChartOptions(theme, 'km/h')
+      });
+
+      // 5. Gráfico Altura de Nieve
+      const ctxNieve = document.getElementById('chartNieve').getContext('2d');
+      if (chartNieve) chartNieve.destroy();
+      chartNieve = new Chart(ctxNieve, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Altura Nieve (cm)',
+            data: datos.map(d => d.nieve),
+            borderColor: '#06b6d4',
+            backgroundColor: 'rgba(6, 182, 212, 0.15)',
+            fill: true,
+            tension: 0.2,
+            borderWidth: 2,
+            pointRadius: sliceCount <= 24 ? 3 : 0
+          }]
+        },
+        options: getChartOptions(theme, 'cm')
+      });
+
+      // 6. Gráfico Presión
+      const ctxPres = document.getElementById('chartPres').getContext('2d');
+      if (chartPres) chartPres.destroy();
+      chartPres = new Chart(ctxPres, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Presión (mbar)',
+            data: datos.map(d => d.pres),
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            fill: false,
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: sliceCount <= 24 ? 3 : 0
+          }]
+        },
+        options: getChartOptions(theme, 'mbar')
+      });
+
+      // 7. Gráfico Radiación Solar
+      const ctxSolar = document.getElementById('chartSolar').getContext('2d');
+      if (chartSolar) chartSolar.destroy();
+      chartSolar = new Chart(ctxSolar, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Irradiancia (W/m²)',
+            data: datos.map(d => d.irrad),
+            borderColor: '#f59e0b',
+            backgroundColor: 'rgba(245, 158, 11, 0.15)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: sliceCount <= 24 ? 3 : 0
+          }]
+        },
+        options: getChartOptions(theme, 'W/m²')
+      });
+
+      // 8. Gráfico Lluvia
+      const ctxLluvia = document.getElementById('chartLluvia').getContext('2d');
+      if (chartLluvia) chartLluvia.destroy();
+      chartLluvia = new Chart(ctxLluvia, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Precipitación (mm)',
+            data: datos.map(d => d.precip),
+            backgroundColor: '#38bdf8',
+            borderRadius: 4
+          }]
+        },
+        options: getChartOptions(theme, 'mm')
+      });
+    }
+
+    function getChartOptions(theme, unit) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} ${unit}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: theme.gridColor },
+            ticks: { color: theme.textColor, font: { size: 10 }, maxRotation: 0 }
+          },
+          y: {
+            grid: { color: theme.gridColor },
+            ticks: { color: theme.textColor, font: { size: 10 } }
+          }
+        }
+      };
+    }
+
+    function actualizarEstilosGraficos() {
+      if (datosClimaGlobal && datosClimaGlobal.serie_reciente) {
+        renderizarGraficos(datosClimaGlobal.serie_reciente);
+      }
+    }
+
+    // Inicialización automática
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarDatosEstacion();
+      // Auto-refresco cada 10 minutos
+      setInterval(cargarDatosEstacion, 600000);
+    });
+  </script>
+</body>
+</html>
