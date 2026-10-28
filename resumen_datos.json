@@ -1,12 +1,12 @@
 {
   "estacion": {
-    "nombre": "Cerro Negro (Corral Negro)",
+    "nombre": "Corral Negro",
     "codigo": "A003",
     "latitud": -24.55,
     "longitud": -66.24,
     "altitud": "4.050 msnm",
     "ubicacion": "Puna Salteña, Salta, Argentina",
-    "institucion": "IANIGLA - CONICET / Observatorio Andino",
+    "institucion": "IANIGLA - CONICET / Observatorio Andino / INTA Salta",
     "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
     "url_oficial": "https://observatorioandino.com/A003/"
   },
@@ -14,7 +14,7 @@
     "inicio": "2024-04-23",
     "fin": "2026-10-28",
     "total_dias": 847,
-    "total_registros_horarios": 20187
+    "total_registros_horarios": 20189
   },
   "records": {
     "temp_min": {
@@ -14137,15 +14137,15 @@
       "fecha": "2026-10-28",
       "t_min": -3.5,
       "t_max": 4.7,
-      "t_med": 0.5,
+      "t_med": 0.6,
       "s_min": 6.4,
-      "s_max": 12.9,
-      "s_med": 9.0,
-      "hum_med": 57.0,
-      "pres_med": 599.4,
+      "s_max": 13.5,
+      "s_med": 9.5,
+      "hum_med": 59.0,
+      "pres_med": 599.2,
       "lluvia": 0.0,
       "v_max": 14.0,
-      "v_med": 8.8,
+      "v_med": 9.1,
       "nieve_max": 1.2,
       "sol_max": 1379.0
     }
