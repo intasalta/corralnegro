@@ -1,9 +1,9 @@
-name: Actualizar Datos Estación Cerro Negro
+name: Actualizar Datos Estación Corral Negro
 
 on:
   schedule:
-    # Se ejecuta cada 2 horas a los 20 minutos (las estaciones satelitales transmiten cada hora)
-    - cron: '20 */2 * * *'
+    # Se ejecuta cada 1 hora a los 20 minutos (las estaciones satelitales transmiten cada hora)
+    - cron: '20 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         run: |
           python -m playwright install --with-deps chromium
 
-      - name: Descargar y procesar datos de Cerro Negro
+      - name: Descargar, procesar datos y generar Excel
         run: |
           python actualizar_datos.py
 
@@ -42,8 +42,8 @@ jobs:
           git config --global user.email "actions@github.com"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           
-          git add cerro_negro_datos.csv clima_actual.json resumen_datos.json
-          git commit -m "Auto: actualización datos climáticos Cerro Negro [$(date -u +'%Y-%m-%d %H:%M UTC')]" || echo "No hay cambios para commitear"
+          git add corral_negro_datos.csv corral_negro_datos.xlsx cerro_negro_datos.csv clima_actual.json resumen_datos.json
+          git commit -m "Auto: actualización datos climáticos Corral Negro [$(date -u +'%Y-%m-%d %H:%M UTC')]" || echo "No hay cambios para commitear"
           
           git pull --rebase --autostash origin main || true
           git push origin main
