@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Actualizador de Datos Climatológicos - Estación Cerro Negro (Corral Negro)
-IANIGLA - CONICET / Observatorio Andino
+Actualizador de Datos Climatológicos - Estación Corral Negro (A003)
+IANIGLA - CONICET / Observatorio Andino / INTA Salta
 """
 
 import os
@@ -16,7 +16,11 @@ import numpy as np
 # Configuración de URLs y directorios
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 URL_ESTACION = "https://observatorioandino.com/A003/"
-CSV_FILE = os.path.join(BASE_DIR, "cerro_negro_datos.csv")
+
+# Archivos de datos
+CSV_FILE = os.path.join(BASE_DIR, "corral_negro_datos.csv")
+CSV_LEGACY_FILE = os.path.join(BASE_DIR, "cerro_negro_datos.csv")
+XLSX_FILE = os.path.join(BASE_DIR, "corral_negro_datos.xlsx")
 JSON_ACTUAL = os.path.join(BASE_DIR, "clima_actual.json")
 JSON_RESUMEN = os.path.join(BASE_DIR, "resumen_datos.json")
 
@@ -42,7 +46,6 @@ def calc_wind_chill(temp, v_kmh):
     if temp is None or v_kmh is None or math.isnan(temp) or math.isnan(v_kmh):
         return None
     if temp <= 10.0 and v_kmh >= 4.8:
-        # Fórmula internacional de Wind Chill
         wc = 13.12 + 0.6215 * temp - 11.37 * (v_kmh ** 0.16) + 0.3965 * temp * (v_kmh ** 0.16)
         return round(wc, 1)
     return round(temp, 1)
@@ -85,6 +88,9 @@ def descargar_con_playwright():
                 except:
                     pass
             os.replace(temp_csv, CSV_FILE)
+            # Mantener copia legacy
+            import shutil
+            shutil.copyfile(CSV_FILE, CSV_LEGACY_FILE)
             print(f"-> Descarga completada: {os.path.getsize(CSV_FILE):,} bytes guardados en {CSV_FILE}")
             return True
         else:
@@ -93,7 +99,11 @@ def descargar_con_playwright():
 def procesar_datos():
     print(f"5. Procesando dataset meteorológico: {CSV_FILE}...")
     if not os.path.exists(CSV_FILE):
-        raise FileNotFoundError(f"No se encontró el archivo {CSV_FILE}")
+        if os.path.exists(CSV_LEGACY_FILE):
+            import shutil
+            shutil.copyfile(CSV_LEGACY_FILE, CSV_FILE)
+        else:
+            raise FileNotFoundError(f"No se encontró el archivo {CSV_FILE}")
 
     col_names = [
         'fecha', 'dia_juliano', 'hora', 'temp_aire', 'hum_rel',
@@ -123,7 +133,7 @@ def procesar_datos():
     df.loc[(df['dir_viento'] < 0) | (df['dir_viento'] > 360), 'dir_viento'] = np.nan
     df.loc[df['irradiancia'] < 0, 'irradiancia'] = 0.0
 
-    # Nieve: pequeñas oscilaciones negativas por calibración ultrasónica en suelo pelado se truncan a 0
+    # Nieve: pequeñas oscilaciones negativas se truncan a 0
     df.loc[df['alt_nieve'] < 0, 'alt_nieve'] = 0.0
     df.loc[df['alt_nieve'] > 200, 'alt_nieve'] = np.nan
 
@@ -131,6 +141,19 @@ def procesar_datos():
     df['vel_viento_kmh'] = (df['vel_viento'] * 3.6).round(1)
 
     print(f"   Total de registros válidos: {len(df):,}")
+
+    # -------------------------------------------------------------
+    # CONVERSIÓN A EXCEL (.XLSX)
+    # -------------------------------------------------------------
+    print(f"5b. Generando archivo Excel ({XLSX_FILE})...")
+    df_excel = df.copy()
+    df_excel.columns = [
+        'Fecha', 'Dia_Juliano', 'Hora', 'Temp_Aire_C', 'Hum_Rel_pct',
+        'Pres_Atm_mbar', 'Precipitacion_mm', 'Vel_Viento_ms', 'Dir_Viento_deg',
+        'Irradiancia_Wm2', 'Temp_Suelo_C', 'Alt_Nieve_cm', 'Vel_Viento_kmh'
+    ]
+    df_excel.to_excel(XLSX_FILE, index=False)
+    print(f"    -> Archivo Excel generado ({os.path.getsize(XLSX_FILE):,} bytes)")
 
     # Última observación válida
     latest_row = df.iloc[-1]
@@ -202,7 +225,7 @@ def procesar_datos():
             else:
                 tendencia_presion = "Estable ({:+.1f} mbar)".format(diff)
 
-    # Serie para index (últimas 72 horas para selector 24h / 48h / 72h)
+    # Serie para index (últimas 72 horas para selector 24h / 48h / 72h / 7d)
     df_reciente = df_7d.copy()
     serie_horas = []
     for _, r in df_reciente.iterrows():
@@ -224,13 +247,13 @@ def procesar_datos():
     # JSON 1: clima_actual.json
     clima_actual = {
         "estacion": {
-            "nombre": "Cerro Negro (Corral Negro)",
+            "nombre": "Corral Negro",
             "codigo": "A003",
             "latitud": -24.55,
             "longitud": -66.24,
             "altitud": "4.050 msnm",
             "ubicacion": "Puna Salteña, Salta, Argentina",
-            "institucion": "IANIGLA - CONICET / Observatorio Andino",
+            "institucion": "IANIGLA - CONICET / Observatorio Andino / INTA Salta",
             "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
             "url_oficial": URL_ESTACION
         },
@@ -351,11 +374,9 @@ def procesar_datos():
         y = int(ym.year)
         m = int(ym.month)
         
-        # Días con lluvia (> 0.2 mm diarios)
         daily_in_month = grp.groupby(grp['fecha'].dt.date)['precipitacion'].sum()
         dias_lluvia = int((daily_in_month >= 0.2).sum())
         
-        # Días con nieve (> 1 cm)
         daily_snow_in_month = grp.groupby(grp['fecha'].dt.date)['alt_nieve'].max()
         dias_nieve = int((daily_snow_in_month >= 1.0).sum())
 
@@ -405,8 +426,10 @@ def main():
             print(f"AVISO: Falló la descarga automática ({e}).")
             if os.path.exists(CSV_FILE):
                 print("Se procederá utilizando el archivo CSV existente...")
+            elif os.path.exists(CSV_LEGACY_FILE):
+                import shutil
+                shutil.copyfile(CSV_LEGACY_FILE, CSV_FILE)
             else:
-                # Si no existe en CERRO FINAL, intentar copiar desde el directorio padre
                 parent_csv = os.path.join(os.path.dirname(BASE_DIR), "cerro_negro_latest.csv")
                 if os.path.exists(parent_csv):
                     print(f"Copiando copia previa desde {parent_csv}...")

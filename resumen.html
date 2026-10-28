@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resumen Histórico y Climatológico - Estación Cerro Negro (IANIGLA / CONICET)</title>
+  <title>Resumen Histórico y Climatológico - Estación Corral Negro (IANIGLA / CONICET)</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -36,16 +36,15 @@
   <header class="bg-gradient-to-r from-[#0B486B] via-[#105B85] to-[#0B7BAF] text-white shadow-lg sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
       
+      <!-- LOGOS INSTITUCIONALES (INTA + IANIGLA-CONICET-UNCUYO) -->
       <div class="flex items-center space-x-3">
         <div class="flex items-center gap-2">
-          <img src="https://raw.githubusercontent.com/intasalta/emas/main/logo_inta.png" alt="Logo INTA" class="h-12 bg-white/95 p-1 rounded-lg shadow-md transition-transform hover:scale-105">
-          <div class="bg-white/95 px-2 py-1 rounded-lg h-12 flex items-center justify-center shadow-md">
-            <span class="text-[11px] font-extrabold text-[#0B486B] tracking-tighter">IANIGLA<br><span class="text-[9px] font-semibold text-slate-600">CONICET</span></span>
-          </div>
+          <img src="./logo_inta.png" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/intasalta/emas/main/logo_inta.png';" alt="Logo INTA" class="h-12 md:h-14 bg-white p-1 rounded-lg shadow-md transition-transform hover:scale-105">
+          <img src="./IANIGLA-CONICET-UNCUYO-Web-1.png" alt="Logo IANIGLA - CONICET - UNCUYO" class="h-12 md:h-14 bg-white p-1 rounded-lg shadow-md transition-transform hover:scale-105">
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Estación Cerro Negro</h1>
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Estación Corral Negro</h1>
             <span class="text-[10px] bg-cyan-400/20 text-cyan-200 border border-cyan-400/30 px-2 py-0.5 rounded-full font-mono font-semibold">Histórico</span>
           </div>
           <p class="text-blue-100 text-xs font-medium">Observatorio Andino • IANIGLA-CONICET / INTA Salta</p>
@@ -81,8 +80,14 @@
               <i data-feather="calendar" class="h-3.5 w-3.5 text-cyan-300"></i> Resumen Histórico
             </a>
 
-            <a href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 font-semibold transition-all shadow-sm">
-              <i data-feather="download" class="h-3.5 w-3.5 text-emerald-300"></i> Descargar CSV Completo
+            <!-- Descarga XLS / Excel -->
+            <a id="btn-download-xls" href="corral_negro_datos.xlsx" download="corral_negro_datos.xlsx" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/35 font-semibold transition-all shadow-sm" title="Descargar datos en formato Microsoft Excel (XLSX)">
+              <i data-feather="download" class="h-3.5 w-3.5 text-emerald-300"></i> Descargar Datos (XLS)
+            </a>
+
+            <!-- Descarga CSV -->
+            <a id="btn-download-csv" href="corral_negro_datos.csv" download="corral_negro_datos.csv" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-blue-200 transition-all shadow-sm" title="Descargar serie temporal completa en formato CSV">
+              <i data-feather="file-text" class="h-3.5 w-3.5"></i> CSV
             </a>
           </div>
 
@@ -110,7 +115,7 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
 
-    <!-- SECCIÓN: RÉCORDS HISTÓRICOS ABSOLUTOS (ACCESIBLE EN TODAS LAS VISTAS) -->
+    <!-- SECCIÓN: RÉCORDS HISTÓRICOS ABSOLUTOS -->
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 transition-colors">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
         <div>
@@ -118,7 +123,7 @@
             Serie 2024 - Presente
           </span>
           <h2 class="text-lg font-bold text-slate-800 dark:text-white mt-1 flex items-center gap-2">
-            <i data-feather="award" class="h-5 w-5 text-amber-500"></i> Récords Absolutos de la Estación
+            <i data-feather="award" class="h-5 w-5 text-amber-500"></i> Récords Absolutos de la Estación Corral Negro
           </h2>
         </div>
         <p id="label-periodo-historico" class="text-xs text-slate-500 dark:text-slate-400">
@@ -298,7 +303,7 @@
 
           <div class="flex items-center gap-2">
             <button onclick="exportarTablaCSV()" class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition">
-              <i data-feather="file-text" class="h-3.5 w-3.5"></i> Exportar Selección
+              <i data-feather="file-text" class="h-3.5 w-3.5"></i> Exportar Selección (CSV)
             </button>
           </div>
         </div>
@@ -332,27 +337,21 @@
 
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-        <div>
-          <p class="text-slate-200 font-semibold text-sm">Estación Meteorológica Cerro Negro (Corral Negro - A003)</p>
-          <p class="text-slate-400 text-xs mt-0.5">Operada por el Instituto Argentino de Nivología, Glaciología y Ciencias Ambientales (IANIGLA - CONICET)</p>
-          <p class="text-slate-500 text-[11px] mt-1">Colaboración con el Observatorio Andino de Nieve y Hielo e INTA Salta</p>
-        </div>
-        <div class="flex items-center gap-3">
-          <a href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition">
-            Descargar CSV Completo
-          </a>
-          <a href="index.html" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-medium transition">
-            Volver al Inicio
-          </a>
-        </div>
+  <!-- FOOTER INSTITUCIONAL CON LOGO MECON -->
+  <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700/60 py-8 mt-12 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 text-center space-y-4">
+      <div class="flex justify-center items-center">
+        <a href="https://www.argentina.gob.ar/economia/agricultura-ganaderia-y-pesca" target="_blank" rel="noopener">
+          <img src="./MECON-Agricultura-BLANCO.png" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/intasalta/emas/main/MECON-Agricultura-BLANCO.png';" alt="Secretaría de Agricultura, Ganadería y Pesca" class="h-14 md:h-16 w-auto opacity-90 hover:opacity-100 transition filter dark:brightness-100">
+        </a>
       </div>
-      <div class="border-t border-slate-800 pt-4 text-[11px] text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <p>Cita requerida: IANIGLA-CONICET, https://observatorioandino.com/estaciones</p>
-        <p>Actualización automatizada vía GitHub Actions</p>
+      <div class="flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-700/60 gap-2">
+        <p class="text-center sm:text-left">
+          Estación Meteorológica Corral Negro (A003) • IANIGLA-CONICET & INTA EEA Salta
+        </p>
+        <p class="text-[11px] text-slate-400">
+          Cita obligatoria: IANIGLA-CONICET, https://observatorioandino.com/estaciones
+        </p>
       </div>
     </div>
   </footer>
@@ -361,7 +360,6 @@
   <script>
     feather.replace();
 
-    // Tema Oscuro / Claro
     const themeToggleBtn = document.getElementById('theme-toggle');
     const darkIcon = document.getElementById('theme-toggle-dark-icon');
     const lightIcon = document.getElementById('theme-toggle-light-icon');
@@ -386,7 +384,7 @@
     });
 
     let resumenGlobal = null;
-    let modoVista = 'mes'; // 'mes', 'anio', 'todo'
+    let modoVista = 'mes';
     let chartHistTemp = null;
     let chartHistNieve = null;
     let chartHistViento = null;
@@ -465,7 +463,7 @@
         for (let i = meses.length - 1; i >= 0; i--) {
           const m = meses[i];
           const opt = document.createElement('option');
-          opt.value = m.periodo; // YYYY-MM
+          opt.value = m.periodo;
           opt.innerText = `${m.nombre_mes} ${m.anio}`;
           select.appendChild(opt);
         }
@@ -565,14 +563,13 @@
       if (!diasFiltrados || diasFiltrados.length === 0) return;
       const theme = getChartTheme();
 
-      // Muestrear si hay demasiados puntos para rendimiento fluido
       let sampleData = diasFiltrados;
       if (diasFiltrados.length > 120) {
         const step = Math.ceil(diasFiltrados.length / 100);
         sampleData = diasFiltrados.filter((_, idx) => idx % step === 0);
       }
 
-      const labels = sampleData.map(d => d.fecha.slice(5)); // MM-DD
+      const labels = sampleData.map(d => d.fecha.slice(5));
 
       // 1. Gráfico Térmico
       const ctxT = document.getElementById('chartHistTemp').getContext('2d');
@@ -763,7 +760,6 @@
         return;
       }
 
-      // Ordenar descendente (más reciente primero)
       const ordenados = [...dias].reverse();
 
       ordenados.forEach(d => {
@@ -798,7 +794,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `cerro_negro_resumen_${document.getElementById('select-mes-anio').value}.csv`;
+      a.download = `corral_negro_resumen_${document.getElementById('select-mes-anio').value}.csv`;
       a.click();
     }
 

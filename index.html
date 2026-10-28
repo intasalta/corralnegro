@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estación Meteorológica Automática Cerro Negro - IANIGLA / CONICET / INTA</title>
+  <title>Estación Meteorológica Automática Corral Negro - IANIGLA / CONICET / INTA</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -53,16 +53,15 @@
   <header class="bg-gradient-to-r from-[#0B486B] via-[#105B85] to-[#0B7BAF] text-white shadow-lg sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
       
+      <!-- LOGOS INSTITUCIONALES (INTA + IANIGLA-CONICET-UNCUYO) -->
       <div class="flex items-center space-x-3">
         <div class="flex items-center gap-2">
-          <img src="https://raw.githubusercontent.com/intasalta/emas/main/logo_inta.png" alt="Logo INTA" class="h-12 bg-white/95 p-1 rounded-lg shadow-md transition-transform hover:scale-105">
-          <div class="bg-white/95 px-2 py-1 rounded-lg h-12 flex items-center justify-center shadow-md">
-            <span class="text-[11px] font-extrabold text-[#0B486B] tracking-tighter">IANIGLA<br><span class="text-[9px] font-semibold text-slate-600">CONICET</span></span>
-          </div>
+          <img src="./logo_inta.png" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/intasalta/emas/main/logo_inta.png';" alt="Logo INTA" class="h-12 md:h-14 bg-white p-1 rounded-lg shadow-md transition-transform hover:scale-105">
+          <img src="./IANIGLA-CONICET-UNCUYO-Web-1.png" alt="Logo IANIGLA - CONICET - UNCUYO" class="h-12 md:h-14 bg-white p-1 rounded-lg shadow-md transition-transform hover:scale-105">
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Estación Cerro Negro</h1>
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Estación Corral Negro</h1>
             <span class="text-[10px] bg-cyan-400/20 text-cyan-200 border border-cyan-400/30 px-2 py-0.5 rounded-full font-mono font-semibold">A003</span>
           </div>
           <p class="text-blue-100 text-xs font-medium">Observatorio Andino • IANIGLA-CONICET / INTA Salta</p>
@@ -98,9 +97,14 @@
               <i data-feather="calendar" class="h-3.5 w-3.5"></i> Resumen Histórico
             </a>
 
+            <!-- Descarga de datos XLS / Excel -->
+            <a id="btn-download-xls" href="corral_negro_datos.xlsx" download="corral_negro_datos.xlsx" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/35 font-semibold transition-all shadow-sm" title="Descargar datos en formato Microsoft Excel (XLSX)">
+              <i data-feather="download" class="h-3.5 w-3.5 text-emerald-300"></i> Descargar Datos (XLS)
+            </a>
+
             <!-- Descarga de datos CSV -->
-            <a id="btn-download-csv" href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 font-semibold transition-all shadow-sm" title="Descargar serie temporal completa en formato CSV">
-              <i data-feather="download" class="h-3.5 w-3.5 text-emerald-300"></i> Descargar Datos (CSV)
+            <a id="btn-download-csv" href="corral_negro_datos.csv" download="corral_negro_datos.csv" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-blue-200 transition-all shadow-sm" title="Descargar serie temporal completa en formato CSV">
+              <i data-feather="file-text" class="h-3.5 w-3.5"></i> CSV
             </a>
 
             <a href="https://observatorioandino.com/A003/" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-blue-200 transition-all shadow-sm" title="Portal oficial de la estación en Observatorio Andino">
@@ -216,7 +220,7 @@
         </div>
       </div>
 
-      <!-- TARJETA: TEMPERATURA DEL SUELO (ESPECIAL CERRO NEGRO) -->
+      <!-- TARJETA: TEMPERATURA DEL SUELO (ESPECIAL CORRAL NEGRO) -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden flex flex-col justify-between transition-colors">
         <div class="p-5">
           <div class="flex justify-between items-center mb-4">
@@ -442,7 +446,7 @@
         </div>
       </div>
 
-      <!-- TARJETA: ALTURA DE NIEVE / MANTO NIVAL (ESPECIAL ALTA MONTAÑA) -->
+      <!-- TARJETA: ALTURA DE NIEVE / MANTO NIVAL (ESPECIAL CORRAL NEGRO) -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/60 p-5 flex flex-col justify-between transition-colors">
         <div>
           <div class="flex justify-between items-center mb-4">
@@ -622,27 +626,21 @@
 
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-        <div>
-          <p class="text-slate-200 font-semibold text-sm">Estación Meteorológica Cerro Negro (Corral Negro - A003)</p>
-          <p class="text-slate-400 text-xs mt-0.5">Operada por el Instituto Argentino de Nivología, Glaciología y Ciencias Ambientales (IANIGLA - CONICET)</p>
-          <p class="text-slate-500 text-[11px] mt-1">Colaboración con el Observatorio Andino de Nieve y Hielo e INTA Salta</p>
-        </div>
-        <div class="flex items-center gap-3">
-          <a href="cerro_negro_datos.csv" download="cerro_negro_datos.csv" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition">
-            Descargar CSV Completo
-          </a>
-          <a href="resumen.html" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-medium transition">
-            Ver Climatología
-          </a>
-        </div>
+  <!-- FOOTER INSTITUCIONAL CON LOGO MECON -->
+  <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700/60 py-8 mt-12 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 text-center space-y-4">
+      <div class="flex justify-center items-center">
+        <a href="https://www.argentina.gob.ar/economia/agricultura-ganaderia-y-pesca" target="_blank" rel="noopener">
+          <img src="./MECON-Agricultura-BLANCO.png" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/intasalta/emas/main/MECON-Agricultura-BLANCO.png';" alt="Secretaría de Agricultura, Ganadería y Pesca" class="h-14 md:h-16 w-auto opacity-90 hover:opacity-100 transition filter dark:brightness-100">
+        </a>
       </div>
-      <div class="border-t border-slate-800 pt-4 text-[11px] text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <p>Cita requerida: IANIGLA-CONICET, https://observatorioandino.com/estaciones</p>
-        <p>Actualización automatizada vía GitHub Actions</p>
+      <div class="flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-700/60 gap-2">
+        <p class="text-center sm:text-left">
+          Estación Meteorológica Corral Negro (A003) • IANIGLA-CONICET & INTA EEA Salta
+        </p>
+        <p class="text-[11px] text-slate-400">
+          Cita obligatoria: IANIGLA-CONICET, https://observatorioandino.com/estaciones
+        </p>
       </div>
     </div>
   </footer>
@@ -652,7 +650,7 @@
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
         <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-          <i data-feather="info" class="text-sky-500"></i> Estación Cerro Negro
+          <i data-feather="info" class="text-sky-500"></i> Estación Corral Negro
         </h3>
         <button id="close-modal-btn" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <i data-feather="x"></i>
@@ -660,7 +658,7 @@
       </div>
       <div class="text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed">
         <p><strong>Ubicación:</strong> Puna de Atacama / Salteña, Provincia de Salta, Argentina (Latitud -24.55°S, Longitud -66.24°O, Altitud ~4.050 msnm).</p>
-        <p><strong>Operador:</strong> Estación mantenida por el Instituto Argentino de Nivología, Glaciología y Ciencias Ambientales (IANIGLA), dependiente de CONICET.</p>
+        <p><strong>Operador:</strong> Estación mantenida por el Instituto Argentino de Nivología, Glaciología y Ciencias Ambientales (IANIGLA), dependiente de CONICET y Universidad Nacional de Cuyo (UNCUYO).</p>
         <p><strong>Objetivo:</strong> Monitoreo hidroclimático de alta montaña, balance de masa, cobertura de nieve y recursos hídricos en la cuenca andina.</p>
         <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1 text-[11px]">
           <p class="font-semibold text-slate-700 dark:text-slate-200">Aviso Legal y Compromiso de Cita:</p>
@@ -751,7 +749,6 @@
     function cambiarRangoHoras(horas) {
       horasRangoActual = horas;
       
-      // Actualizar botones UI
       const b24 = document.getElementById('btn-rango-24h');
       const b48 = document.getElementById('btn-rango-48h');
       const b7d = document.getElementById('btn-rango-7d');
@@ -780,7 +777,7 @@
         datosClimaGlobal = data;
         actualizarUI(data);
       } catch (err) {
-        console.warn("No se pudo cargar clima_actual.json, intentando alternativa...", err);
+        console.warn("No se pudo cargar clima_actual.json:", err);
         document.getElementById('label-station-datetime').innerText = "Consultando datos de la estación...";
       } finally {
         if (refreshIcon) {
@@ -900,7 +897,6 @@
     function renderizarGraficos(serieCompleta) {
       const theme = getChartTheme();
 
-      // Recortar según rango de horas
       const sliceCount = Math.min(horasRangoActual, serieCompleta.length);
       const datos = serieCompleta.slice(-sliceCount);
 
@@ -1117,7 +1113,6 @@
     // Inicialización automática
     window.addEventListener('DOMContentLoaded', () => {
       cargarDatosEstacion();
-      // Auto-refresco cada 10 minutos
       setInterval(cargarDatosEstacion, 600000);
     });
   </script>
