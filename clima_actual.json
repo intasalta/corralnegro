@@ -10,21 +10,21 @@
     "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
     "url_oficial": "https://observatorioandino.com/A003/"
   },
-  "ultima_actualizacion": "2026-10-29 12:00:00",
+  "ultima_actualizacion": "2026-10-29 13:00:00",
   "actual": {
-    "temp_aire": 2.9,
-    "temp_suelo": 6.5,
-    "hum_rel": 38,
-    "pres_atm": 598.3,
-    "tendencia_presion": "Estable (-0.6 mbar)",
-    "vel_viento_kmh": 11.2,
-    "vel_viento_ms": 3.11,
-    "dir_viento_deg": 70,
-    "dir_viento_cardinal": "ENE",
-    "irradiancia": 709,
+    "temp_aire": 2.1,
+    "temp_suelo": 8.2,
+    "hum_rel": 62,
+    "pres_atm": 598.0,
+    "tendencia_presion": "Estable (-0.9 mbar)",
+    "vel_viento_kmh": 13.0,
+    "vel_viento_ms": 3.6,
+    "dir_viento_deg": 188,
+    "dir_viento_cardinal": "S",
+    "irradiancia": 847,
     "alt_nieve": 0.0,
-    "sensacion_termica": -0.1,
-    "punto_rocio": -10.0,
+    "sensacion_termica": -1.4,
+    "punto_rocio": -4.3,
     "precipitacion_horaria": 0.0
   },
   "estadisticas_24h": {
@@ -56,28 +56,14 @@
       "max_time": "23:00",
       "avg": 598.8
     },
-    "viento_max_kmh": 12.8,
-    "viento_avg_kmh": 7.9,
+    "viento_max_kmh": 13.0,
+    "viento_avg_kmh": 8.0,
     "lluvia_acumulada_24h": 0.2,
     "lluvia_acumulada_48h": 0.2,
     "irradiancia_max": 1379.0,
-    "nieve_max_24h": 0.7
+    "nieve_max_24h": 0.4
   },
   "serie_reciente": [
-    {
-      "fecha": "2026-10-22 12:00",
-      "hora": "12:00",
-      "dia": "22/10",
-      "temp": 8.8,
-      "temp_suelo": 9.8,
-      "hum": 9.0,
-      "pres": 601.6,
-      "viento_kmh": 13.0,
-      "dir_deg": 321.0,
-      "irrad": 325.0,
-      "precip": 0.0,
-      "nieve": 0.0
-    },
     {
       "fecha": "2026-10-22 13:00",
       "hora": "13:00",
@@ -2399,6 +2385,20 @@
       "viento_kmh": 11.2,
       "dir_deg": 70.0,
       "irrad": 709.0,
+      "precip": 0.0,
+      "nieve": 0.0
+    },
+    {
+      "fecha": "2026-10-29 13:00",
+      "hora": "13:00",
+      "dia": "29/10",
+      "temp": 2.1,
+      "temp_suelo": 8.2,
+      "hum": 62.0,
+      "pres": 598.0,
+      "viento_kmh": 13.0,
+      "dir_deg": 188.0,
+      "irrad": 847.0,
       "precip": 0.0,
       "nieve": 0.0
     }
