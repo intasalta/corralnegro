@@ -14,7 +14,7 @@
     "inicio": "2024-04-23",
     "fin": "2026-10-29",
     "total_dias": 848,
-    "total_registros_horarios": 20213
+    "total_registros_horarios": 20214
   },
   "records": {
     "temp_min": {
@@ -582,7 +582,7 @@
       "anio": 2026,
       "mes": 10,
       "nombre_mes": "Octubre",
-      "t_med": 3.0,
+      "t_med": 2.9,
       "t_min_abs": -5.4,
       "t_max_abs": 11.8,
       "s_med": 8.6,
@@ -14153,15 +14153,15 @@
       "fecha": "2026-10-29",
       "t_min": -4.6,
       "t_max": 4.4,
-      "t_med": -1.1,
+      "t_med": -1.0,
       "s_min": 4.7,
       "s_max": 10.9,
-      "s_med": 7.4,
-      "hum_med": 73.0,
-      "pres_med": 598.3,
+      "s_med": 7.6,
+      "hum_med": 74.0,
+      "pres_med": 598.2,
       "lluvia": 0.2,
       "v_max": 13.2,
-      "v_med": 7.8,
+      "v_med": 8.1,
       "nieve_max": 0.3,
       "sol_max": 847.0
     }
