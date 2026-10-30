@@ -10,21 +10,21 @@
     "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
     "url_oficial": "https://observatorioandino.com/A003/"
   },
-  "ultima_actualizacion": "2026-10-29 21:00:00",
+  "ultima_actualizacion": "2026-10-29 22:00:00",
   "actual": {
-    "temp_aire": -2.5,
-    "temp_suelo": 9.0,
-    "hum_rel": 95,
-    "pres_atm": 597.2,
-    "tendencia_presion": "Estable (+0.6 mbar)",
-    "vel_viento_kmh": 9.7,
-    "vel_viento_ms": 2.69,
-    "dir_viento_deg": 97,
-    "dir_viento_cardinal": "E",
+    "temp_aire": -2.4,
+    "temp_suelo": 8.6,
+    "hum_rel": 96,
+    "pres_atm": 597.4,
+    "tendencia_presion": "Estable (+0.5 mbar)",
+    "vel_viento_kmh": 6.7,
+    "vel_viento_ms": 1.87,
+    "dir_viento_deg": 122,
+    "dir_viento_cardinal": "ESE",
     "irradiancia": 0,
-    "alt_nieve": 0.3,
-    "sensacion_termica": -6.2,
-    "punto_rocio": -3.2,
+    "alt_nieve": 0.0,
+    "sensacion_termica": -5.1,
+    "punto_rocio": -2.9,
     "precipitacion_horaria": 0.0
   },
   "estadisticas_24h": {
@@ -47,7 +47,7 @@
       "min_time": "12:00",
       "max": 97.9,
       "max_time": "22:00",
-      "avg": 77.0
+      "avg": 77.8
     },
     "pres_atm": {
       "min": 596.4,
@@ -57,27 +57,13 @@
       "avg": 598.2
     },
     "viento_max_kmh": 13.2,
-    "viento_avg_kmh": 8.1,
+    "viento_avg_kmh": 8.0,
     "lluvia_acumulada_24h": 0.2,
     "lluvia_acumulada_48h": 0.2,
     "irradiancia_max": 847.0,
     "nieve_max_24h": 0.3
   },
   "serie_reciente": [
-    {
-      "fecha": "2026-10-22 21:00",
-      "hora": "21:00",
-      "dia": "22/10",
-      "temp": 5.1,
-      "temp_suelo": 12.9,
-      "hum": 10.0,
-      "pres": 602.1,
-      "viento_kmh": 10.8,
-      "dir_deg": 305.0,
-      "irrad": 0.0,
-      "precip": 0.0,
-      "nieve": 0.0
-    },
     {
       "fecha": "2026-10-22 22:00",
       "hora": "22:00",
@@ -2401,6 +2387,20 @@
       "irrad": 0.0,
       "precip": 0.0,
       "nieve": 0.3
+    },
+    {
+      "fecha": "2026-10-29 22:00",
+      "hora": "22:00",
+      "dia": "29/10",
+      "temp": -2.4,
+      "temp_suelo": 8.6,
+      "hum": 96.0,
+      "pres": 597.4,
+      "viento_kmh": 6.7,
+      "dir_deg": 122.0,
+      "irrad": 0.0,
+      "precip": 0.0,
+      "nieve": 0.0
     }
   ]
 }
