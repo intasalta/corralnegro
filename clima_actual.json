@@ -10,21 +10,21 @@
     "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
     "url_oficial": "https://observatorioandino.com/A003/"
   },
-  "ultima_actualizacion": "2026-11-01 18:00:00",
+  "ultima_actualizacion": "2026-11-01 19:00:00",
   "actual": {
-    "temp_aire": 7.0,
-    "temp_suelo": 14.0,
-    "hum_rel": 7,
-    "pres_atm": 598.3,
-    "tendencia_presion": "Estable (+0.4 mbar)",
-    "vel_viento_kmh": 21.4,
-    "vel_viento_ms": 5.95,
-    "dir_viento_deg": 311,
-    "dir_viento_cardinal": "NO",
-    "irradiancia": 43,
+    "temp_aire": 5.8,
+    "temp_suelo": 13.2,
+    "hum_rel": 13,
+    "pres_atm": 598.7,
+    "tendencia_presion": "Estable (+0.9 mbar)",
+    "vel_viento_kmh": 19.4,
+    "vel_viento_ms": 5.39,
+    "dir_viento_deg": 338,
+    "dir_viento_cardinal": "NNO",
+    "irradiancia": 35,
     "alt_nieve": 0.0,
-    "sensacion_termica": 3.4,
-    "punto_rocio": -27.1,
+    "sensacion_termica": 2.1,
+    "punto_rocio": -20.4,
     "precipitacion_horaria": 0.0
   },
   "estadisticas_24h": {
@@ -40,14 +40,14 @@
       "min_time": "08:00",
       "max": 14.7,
       "max_time": "16:00",
-      "avg": 8.8
+      "avg": 8.9
     },
     "hum_rel": {
       "min": 2.4,
       "min_time": "15:00",
       "max": 42.4,
       "max_time": "23:00",
-      "avg": 12.4
+      "avg": 12.3
     },
     "pres_atm": {
       "min": 597.1,
@@ -64,20 +64,6 @@
     "nieve_max_24h": 0.0
   },
   "serie_reciente": [
-    {
-      "fecha": "2026-10-25 18:00",
-      "hora": "18:00",
-      "dia": "25/10",
-      "temp": 10.0,
-      "temp_suelo": 15.4,
-      "hum": 11.0,
-      "pres": 598.9,
-      "viento_kmh": 12.9,
-      "dir_deg": 351.0,
-      "irrad": 108.0,
-      "precip": 0.0,
-      "nieve": 0.0
-    },
     {
       "fecha": "2026-10-25 19:00",
       "hora": "19:00",
@@ -2357,6 +2343,20 @@
       "viento_kmh": 21.4,
       "dir_deg": 311.0,
       "irrad": 43.0,
+      "precip": 0.0,
+      "nieve": 0.0
+    },
+    {
+      "fecha": "2026-11-01 19:00",
+      "hora": "19:00",
+      "dia": "01/11",
+      "temp": 5.8,
+      "temp_suelo": 13.2,
+      "hum": 13.0,
+      "pres": 598.7,
+      "viento_kmh": 19.4,
+      "dir_deg": 338.0,
+      "irrad": 35.0,
       "precip": 0.0,
       "nieve": 0.0
     }
