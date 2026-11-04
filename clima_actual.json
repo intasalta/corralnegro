@@ -10,21 +10,21 @@
     "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
     "url_oficial": "https://observatorioandino.com/A003/"
   },
-  "ultima_actualizacion": "2026-11-04 13:00:00",
+  "ultima_actualizacion": "2026-11-04 14:00:00",
   "actual": {
-    "temp_aire": 13.9,
-    "temp_suelo": 12.3,
-    "hum_rel": 5,
-    "pres_atm": 601.1,
-    "tendencia_presion": "Estable (+0.2 mbar)",
-    "vel_viento_kmh": 11.9,
-    "vel_viento_ms": 3.3,
-    "dir_viento_deg": 226,
-    "dir_viento_cardinal": "SO",
-    "irradiancia": 1047,
-    "alt_nieve": 0.5,
-    "sensacion_termica": 13.9,
-    "punto_rocio": -25.5,
+    "temp_aire": 13.8,
+    "temp_suelo": 14.1,
+    "hum_rel": 4,
+    "pres_atm": 600.8,
+    "tendencia_presion": "Estable (-0.4 mbar)",
+    "vel_viento_kmh": 14.9,
+    "vel_viento_ms": 4.15,
+    "dir_viento_deg": 321,
+    "dir_viento_cardinal": "NO",
+    "irradiancia": 1156,
+    "alt_nieve": 0.0,
+    "sensacion_termica": 13.8,
+    "punto_rocio": -26.8,
     "precipitacion_horaria": 0.0
   },
   "estadisticas_24h": {
@@ -33,51 +33,37 @@
       "min_time": "05:00",
       "max": 13.9,
       "max_time": "13:00",
-      "avg": 6.6
+      "avg": 6.7
     },
     "temp_suelo": {
       "min": 6.5,
       "min_time": "08:00",
       "max": 16.0,
       "max_time": "16:00",
-      "avg": 11.0
+      "avg": 11.1
     },
     "hum_rel": {
-      "min": 4.8,
-      "min_time": "13:00",
+      "min": 4.3,
+      "min_time": "14:00",
       "max": 21.3,
       "max_time": "23:00",
-      "avg": 12.9
+      "avg": 12.7
     },
     "pres_atm": {
       "min": 599.5,
       "min_time": "06:00",
       "max": 601.9,
       "max_time": "22:00",
-      "avg": 600.5
+      "avg": 600.6
     },
     "viento_max_kmh": 33.7,
-    "viento_avg_kmh": 22.4,
+    "viento_avg_kmh": 22.1,
     "lluvia_acumulada_24h": 0.0,
     "lluvia_acumulada_48h": 0.0,
-    "irradiancia_max": 1169.0,
+    "irradiancia_max": 1156.0,
     "nieve_max_24h": 0.7
   },
   "serie_reciente": [
-    {
-      "fecha": "2026-10-28 13:00",
-      "hora": "13:00",
-      "dia": "28/10",
-      "temp": 4.2,
-      "temp_suelo": 11.4,
-      "hum": 54.0,
-      "pres": 599.0,
-      "viento_kmh": 11.1,
-      "dir_deg": 141.0,
-      "irrad": 1379.0,
-      "precip": 0.0,
-      "nieve": 0.2
-    },
     {
       "fecha": "2026-10-28 14:00",
       "hora": "14:00",
@@ -2345,6 +2331,20 @@
       "irrad": 1047.0,
       "precip": 0.0,
       "nieve": 0.5
+    },
+    {
+      "fecha": "2026-11-04 14:00",
+      "hora": "14:00",
+      "dia": "04/11",
+      "temp": 13.8,
+      "temp_suelo": 14.1,
+      "hum": 4.0,
+      "pres": 600.8,
+      "viento_kmh": 14.9,
+      "dir_deg": 321.0,
+      "irrad": 1156.0,
+      "precip": 0.0,
+      "nieve": 0.0
     }
   ]
 }
