@@ -14,7 +14,7 @@
     "inicio": "2024-04-23",
     "fin": "2026-11-06",
     "total_dias": 856,
-    "total_registros_horarios": 20403
+    "total_registros_horarios": 20404
   },
   "records": {
     "temp_min": {
@@ -603,14 +603,14 @@
       "t_med": 7.1,
       "t_min_abs": -0.6,
       "t_max_abs": 15.5,
-      "s_med": 11.6,
-      "hum_med": 11.0,
+      "s_med": 11.7,
+      "hum_med": 12.0,
       "pres_med": 600.0,
       "lluvia_total": 0.0,
       "dias_lluvia": 0,
       "dias_nieve": 3,
       "nieve_max": 1.7,
-      "v_med": 16.6,
+      "v_med": 16.5,
       "v_max": 36.6
     }
   ],
@@ -14299,15 +14299,15 @@
       "fecha": "2026-11-06",
       "t_min": 4.2,
       "t_max": 15.5,
-      "t_med": 9.3,
+      "t_med": 9.2,
       "s_min": 9.9,
       "s_max": 19.7,
-      "s_med": 14.5,
-      "hum_med": 15.0,
-      "pres_med": 601.1,
+      "s_med": 14.6,
+      "hum_med": 16.0,
+      "pres_med": 601.3,
       "lluvia": 0.0,
       "v_max": 15.2,
-      "v_med": 11.7,
+      "v_med": 11.5,
       "nieve_max": 0.4,
       "sol_max": 1205.0
     }
