@@ -10,21 +10,21 @@
     "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
     "url_oficial": "https://observatorioandino.com/A003/"
   },
-  "ultima_actualizacion": "2026-11-09 00:00:00",
+  "ultima_actualizacion": "2026-11-09 01:00:00",
   "actual": {
-    "temp_aire": 3.2,
-    "temp_suelo": 16.2,
-    "hum_rel": 76,
-    "pres_atm": 604.1,
-    "tendencia_presion": "Subiendo (+1.1 mbar)",
-    "vel_viento_kmh": 3.9,
-    "vel_viento_ms": 1.09,
-    "dir_viento_deg": 354,
-    "dir_viento_cardinal": "N",
+    "temp_aire": 4.7,
+    "temp_suelo": 15.6,
+    "hum_rel": 66,
+    "pres_atm": 603.7,
+    "tendencia_presion": "Estable (+0.0 mbar)",
+    "vel_viento_kmh": 3.2,
+    "vel_viento_ms": 0.89,
+    "dir_viento_deg": 13,
+    "dir_viento_cardinal": "NNE",
     "irradiancia": 0,
-    "alt_nieve": 0.3,
-    "sensacion_termica": 3.2,
-    "punto_rocio": -0.7,
+    "alt_nieve": 0.0,
+    "sensacion_termica": 4.7,
+    "punto_rocio": -1.2,
     "precipitacion_horaria": 0.0
   },
   "estadisticas_24h": {
@@ -47,7 +47,7 @@
       "min_time": "12:00",
       "max": 75.6,
       "max_time": "00:00",
-      "avg": 54.6
+      "avg": 54.5
     },
     "pres_atm": {
       "min": 601.3,
@@ -64,20 +64,6 @@
     "nieve_max_24h": 1.5
   },
   "serie_reciente": [
-    {
-      "fecha": "2026-11-02 00:00",
-      "hora": "00:00",
-      "dia": "02/11",
-      "temp": 1.5,
-      "temp_suelo": 9.2,
-      "hum": 21.0,
-      "pres": 599.9,
-      "viento_kmh": 18.4,
-      "dir_deg": 177.0,
-      "irrad": 0.0,
-      "precip": 0.0,
-      "nieve": 0.0
-    },
     {
       "fecha": "2026-11-02 01:00",
       "hora": "01:00",
@@ -2373,6 +2359,20 @@
       "irrad": 0.0,
       "precip": 0.0,
       "nieve": 0.3
+    },
+    {
+      "fecha": "2026-11-09 01:00",
+      "hora": "01:00",
+      "dia": "09/11",
+      "temp": 4.7,
+      "temp_suelo": 15.6,
+      "hum": 66.0,
+      "pres": 603.7,
+      "viento_kmh": 3.2,
+      "dir_deg": 13.0,
+      "irrad": 0.0,
+      "precip": 0.0,
+      "nieve": 0.0
     }
   ]
 }
