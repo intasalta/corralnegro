@@ -10,51 +10,51 @@
     "cita": "Datos libres y gratuitos citando a: IANIGLA-CONICET, https://observatorioandino.com/estaciones",
     "url_oficial": "https://observatorioandino.com/A003/"
   },
-  "ultima_actualizacion": "2026-11-11 18:00:00",
+  "ultima_actualizacion": "2026-11-11 19:00:00",
   "actual": {
-    "temp_aire": 7.8,
-    "temp_suelo": 18.3,
-    "hum_rel": 69,
-    "pres_atm": 602.9,
-    "tendencia_presion": "Estable (-0.6 mbar)",
-    "vel_viento_kmh": 14.1,
-    "vel_viento_ms": 3.92,
-    "dir_viento_deg": 149,
-    "dir_viento_cardinal": "SSE",
-    "irradiancia": 22,
+    "temp_aire": 6.7,
+    "temp_suelo": 17.9,
+    "hum_rel": 78,
+    "pres_atm": 603.4,
+    "tendencia_presion": "Estable (+0.2 mbar)",
+    "vel_viento_kmh": 10.4,
+    "vel_viento_ms": 2.9,
+    "dir_viento_deg": 140,
+    "dir_viento_cardinal": "SE",
+    "irradiancia": 15,
     "alt_nieve": 0.0,
-    "sensacion_termica": 5.4,
-    "punto_rocio": 2.5,
+    "sensacion_termica": 4.6,
+    "punto_rocio": 3.1,
     "precipitacion_horaria": 0.0
   },
   "estadisticas_24h": {
     "temp_aire": {
       "min": 1.0,
       "min_time": "07:00",
-      "max": 13.9,
-      "max_time": "18:00",
-      "avg": 6.7
+      "max": 13.5,
+      "max_time": "19:00",
+      "avg": 6.4
     },
     "temp_suelo": {
       "min": 11.3,
       "min_time": "08:00",
-      "max": 20.0,
-      "max_time": "18:00",
-      "avg": 16.0
+      "max": 19.7,
+      "max_time": "19:00",
+      "avg": 15.9
     },
     "hum_rel": {
       "min": 6.4,
       "min_time": "19:00",
       "max": 97.7,
       "max_time": "01:00",
-      "avg": 63.8
+      "avg": 66.8
     },
     "pres_atm": {
-      "min": 601.9,
-      "min_time": "18:00",
+      "min": 602.1,
+      "min_time": "19:00",
       "max": 604.9,
       "max_time": "23:00",
-      "avg": 603.6
+      "avg": 603.7
     },
     "viento_max_kmh": 14.1,
     "viento_avg_kmh": 7.7,
@@ -64,20 +64,6 @@
     "nieve_max_24h": 2.1
   },
   "serie_reciente": [
-    {
-      "fecha": "2026-11-04 18:00",
-      "hora": "18:00",
-      "dia": "04/11",
-      "temp": 11.8,
-      "temp_suelo": 16.5,
-      "hum": 5.0,
-      "pres": 599.9,
-      "viento_kmh": 19.0,
-      "dir_deg": 43.0,
-      "irrad": 43.0,
-      "precip": 0.0,
-      "nieve": 0.0
-    },
     {
       "fecha": "2026-11-04 19:00",
       "hora": "19:00",
@@ -2287,6 +2273,20 @@
       "viento_kmh": 14.1,
       "dir_deg": 149.0,
       "irrad": 22.0,
+      "precip": 0.0,
+      "nieve": 0.0
+    },
+    {
+      "fecha": "2026-11-11 19:00",
+      "hora": "19:00",
+      "dia": "11/11",
+      "temp": 6.7,
+      "temp_suelo": 17.9,
+      "hum": 78.0,
+      "pres": 603.4,
+      "viento_kmh": 10.4,
+      "dir_deg": 140.0,
+      "irrad": 15.0,
       "precip": 0.0,
       "nieve": 0.0
     }
