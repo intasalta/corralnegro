@@ -1,7 +1,7 @@
 Estación: Corral Negro
 Latitud: -24.55°S
 Longitud: -66.24°O
-Fecha de acceso: 2026-11-11 05:02:01 GMTUTC
+Fecha de acceso: 2026-11-11 05:31:42 GMTUTC
 
 Datos horarios preliminares transmitidos vía satélite.
 https://observatorioandino.com/estaciones
@@ -20503,3 +20503,4 @@ yyyy-mm-dd hh:mm:ss,yyyyddd,hh:mm:ss,°C,%,mbar,mm,m/s,°,w/m²,°C,cm
 2026-11-10 21:00:00,2026314,21:00:00,7.24,60.13,603.7,0,1.989,137.9,-1.19,18.69,-0.3
 2026-11-10 23:00:00,2026314,23:00:00,3.98,90.3,604.9,0,2.425,139,-0.05,17.4,0.1
 2026-11-11 00:00:00,2026315,00:00:00,3.4,96.6,604.8,0,1.15,134.3,-0.38,16.8,0.3
+2026-11-11 01:00:00,2026315,01:00:00,3.43,97.7,604.5,0,1.181,131.7,-0.07,16.25,0.1
